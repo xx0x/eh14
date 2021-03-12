@@ -15,8 +15,19 @@
 #define SEG_ON 9        // DON'T CHANGE THIS AT ALL
 #define SEG_OFF 6       // DON'T CHANGE THIS AT ALL
 
+// Total digit definitions
+#define DIGIT_DEFINITIONS 18
+#define LETTER_A 10
+#define LETTER_B 11
+#define LETTER_C 12
+#define LETTER_D 13
+#define LETTER_E 14
+#define LETTER_F 15
+#define LETTER_G 16
+#define LETTER_H 17
+
 // Digit and char defintions
-byte digitDefinitions[10] = {
+byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B00111111, // 0
     B00000110, // 1
     B01011011, // 2
@@ -26,7 +37,15 @@ byte digitDefinitions[10] = {
     B01111101, // 6
     B00000111, // 7
     B01111111, // 8
-    B01100111  // 9
+    B01100111, // 9
+    B01110111, // A
+    B01111100, // b
+    B00111001, // C
+    B01011110, // d
+    B01111001, // E
+    B01110001, // F
+    B01101111, // g
+    B01110110, // H
 };
 
 // In which order to change segments
@@ -152,6 +171,19 @@ void displaySetup()
 
     delay(500);
     displayClear();
+}
+
+// Tests all the digits/letters
+void displayTest()
+{
+    for (byte i = 0; i < DIGIT_DEFINITIONS; i++)
+    {
+        for (byte d = 0; d < DIGITS; d++)
+        {
+            displayWriteNumber(d, i);
+            delay(200);
+        }
+    }
 }
 
 // Turns on/off the status LED
