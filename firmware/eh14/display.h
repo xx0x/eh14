@@ -85,26 +85,34 @@ void displayClearAllRegisters()
 // Bad Example:     00000000 00000011 (fries the first segment mosfets or 595)
 void displayWriteData(byte displayNumber, uint16_t value)
 {
+    // Start writing to the registers
     digitalWrite(PIN_DISPLAY_LATCH, LOW);
 
+    // Shift zeros to displays after the current display (if any)
     for (byte i = displayNumber + 1; i < DIGITS; i++)
     {
         shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, 0);
         shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, 0);
     }
 
+    // Shift the current display
     shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, value >> 8);
     shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, value & 0xFF);
 
+    // Shift zeros to the display before the current display (if any)
     for (byte i = 0; i < displayNumber; i++)
     {
         shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, 0);
         shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_CLOCK, MSBFIRST, 0);
     }
 
+    // Pull the latch high to update the mosfets
     digitalWrite(PIN_DISPLAY_LATCH, HIGH);
 
+    // Hold the mosfets for 1 ms
     delay(HOLD_TIME);
+
+    // Clear the mosfets
     displayClearAllRegisters();
 }
 
