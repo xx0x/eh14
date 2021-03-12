@@ -1,10 +1,10 @@
 #include "Arduino.h"
 
 // Feather M0 pin definitions
-#define PIN_DISPLAY_DATA 5
-#define PIN_DISPLAY_LATCH 6
-#define PIN_DISPLAY_CLOCK 9
-#define PIN_DISPLAY_ENABLE 10
+#define PIN_DISPLAY_ENABLE 5
+#define PIN_DISPLAY_DATA 10
+#define PIN_DISPLAY_LATCH 11
+#define PIN_DISPLAY_CLOCK 12
 #define PIN_DISPLAY_LED 13
 
 // Display config
