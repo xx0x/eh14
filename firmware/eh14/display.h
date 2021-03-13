@@ -1,22 +1,16 @@
 #include "Arduino.h"
 
-// Feather M0 pin definitions
-#define PIN_DISPLAY_ENABLE 5
-#define PIN_DISPLAY_DATA 10
-#define PIN_DISPLAY_LATCH 11
-#define PIN_DISPLAY_CLOCK 12
-#define PIN_DISPLAY_LED 13
-
 // Display config
 #define DIGITS 4
 #define SEGMENTS 7
-#define BETWEEN_TIME 60 // YOU MAY CHANGE THIS
-#define HOLD_TIME 1     // DON'T CHANGE THIS AT ALL
-#define SEG_ON 9        // DON'T CHANGE THIS AT ALL
-#define SEG_OFF 6       // DON'T CHANGE THIS AT ALL
+#define BETWEEN_TIME 60      // YOU MAY CHANGE THIS
+#define FAST_BETWEEN_TIME 10 // YOU MAY CHANGE THIS
+#define HOLD_TIME 1          // DON'T CHANGE THIS AT ALL
+#define SEG_ON 9             // DON'T CHANGE THIS AT ALL
+#define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
-#define DIGIT_DEFINITIONS 18
+#define DIGIT_DEFINITIONS 23
 #define LETTER_A 10
 #define LETTER_B 11
 #define LETTER_C 12
@@ -25,6 +19,11 @@
 #define LETTER_F 15
 #define LETTER_G 16
 #define LETTER_H 17
+#define LETTER_I 18
+#define LETTER_J 19
+#define LETTER_K 20
+#define LETTER_L 21
+#define LETTER_NONE (DIGIT_DEFINITIONS - 1)
 
 // Digit and char defintions
 byte digitDefinitions[DIGIT_DEFINITIONS] = {
@@ -46,6 +45,11 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B01110001, // F
     B01101111, // g
     B01110110, // H
+    B00000110, // I
+    B00011110, // J
+    B01110100, // k
+    B00111000, // L
+    B00000000, // None
 };
 
 // In which order to change segments
@@ -177,7 +181,7 @@ void displaySetup()
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     digitalWrite(PIN_DISPLAY_LED, LOW);
 
-    delay(500);
+    delay(1000);
     displayClear();
 }
 
@@ -198,4 +202,22 @@ void displayTest()
 void displaySetLed(bool ledState)
 {
     digitalWrite(PIN_DISPLAY_LED, ledState);
+}
+
+// Display "flash" message
+void displayFlash()
+{
+    displayWriteNumber(0, LETTER_F);
+    displayWriteNumber(1, LETTER_L);
+    displayWriteNumber(2, LETTER_A);
+    displayWriteNumber(3, 5);
+}
+
+// Display "empty" message
+void displayEmpty()
+{
+    displayWriteNumber(0, LETTER_E);
+    displayWriteNumber(1, LETTER_E);
+    displayWriteNumber(2, LETTER_E);
+    displayWriteNumber(3, LETTER_E);
 }
