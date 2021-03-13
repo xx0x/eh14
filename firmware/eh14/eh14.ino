@@ -16,8 +16,8 @@ Adafruit_ZeroI2S i2s(PIN_I2S_FS, PIN_I2S_SCK, PIN_I2S_TX, PIN_I2S_RX);
 
 // Volume
 #define VOLUMES_COUNT 8
-byte currentVolume = 7;
-uint32_t volumes[VOLUMES_COUNT] = {0, 2000, 4000, 8000, 12000, 16000, 26000, 34000};
+byte currentVolume = 3;
+uint32_t volumes[VOLUMES_COUNT] = {0, 500, 1000, 3000, 6000, 12000, 16000, 22000};
 
 // Alarm stuff
 #define ALARMS_COUNT alarmsCount
@@ -89,7 +89,8 @@ void loop()
     if (IS_MENU_BUTTON_PRESSED)
     {
         displaySetLed(true);
-        saySample(SAMPLE_ALARM_BASE + 9);
+        saySample(SAMPLE_ALARM_BASE + 0);
+        // saySample(SAMPLE_ALARM_BASE + 9);
         displaySetLed(false);
     }
     
