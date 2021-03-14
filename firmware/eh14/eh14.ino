@@ -1,6 +1,7 @@
 #include <SPIMemory.h> // modified
 #include "Adafruit_ZeroI2S.h"
 #include "pins.h"
+#include "RTClib.h" // modified
 
 #define IS_SNOOZE_BUTTON_PRESSED (digitalRead(PIN_SNOOZE_BUTTON) == LOW)
 #define IS_MENU_BUTTON_PRESSED (digitalRead(PIN_MENU_BUTTON) == LOW)
@@ -12,6 +13,7 @@
 #define Serial SERIAL_PORT_USBVIRTUAL
 
 SPIFlash flash(PIN_FLASH_CS);
+RTC_DS3231 rtc;
 Adafruit_ZeroI2S i2s(PIN_I2S_FS, PIN_I2S_SCK, PIN_I2S_TX, PIN_I2S_RX);
 
 // Volume
@@ -32,11 +34,23 @@ bool menuActive = false;
 bool stopPlaying = false;
 bool isPlaying = false;
 
+// Buttons and timings
+#define DEBOUNCE_TIME 250
+bool snoozeButtonPressed = false;
+bool menuButtonPressed = false;
+bool changeButtonPressed = false;
+unsigned long lastTimeSnoozeButton = 0;
+unsigned long lastTimeMenuButton = 0;
+unsigned long lastTimeChangeButton = 0;
+#define MENU_TIMEOUT 30000
+
 // Include parts
-#include "display.h"
-#include "samples.h"
-#include "flash.h"
-#include "say.h"
+#include "./display.h"
+#include "./clock.h"
+#include "./samples.h"
+#include "./flash.h"
+#include "./say.h"
+#include "./sleep.h"
 
 void setup()
 {
@@ -50,6 +64,8 @@ void setup()
     Serial.println("EH14 startup\n");
 
     displaySetup();
+    clockSetup();
+    sleepSetup(callbackSnoozeButton, callbackMenuButton, callbackChangeButton, callbackAlarm);
 
     for (byte i = 0; i < 10; i++)
     {
@@ -72,50 +88,104 @@ void setup()
     saySetup();
 
     Serial.println("EH14 ready\n");
+    // clockAlarmSet(12, 10);
 }
 
 void loop()
 {
+    alarmLoop();
     serialLoop();
+    timeLoop();
+}
 
-    if (IS_SNOOZE_BUTTON_PRESSED)
+bool stopAlarm()
+{
+    if (alarmTriggered)
     {
-        displaySetLed(true);
-        displayTime(16, 25);
-        sayTime(16, 25, 0);
-        displaySetLed(false);
+        stopPlaying = true;
+        return true;
     }
+    return false;
+}
 
-    if (IS_MENU_BUTTON_PRESSED)
+void callbackSnoozeButton()
+{
+    if (millis() - lastTimeSnoozeButton < DEBOUNCE_TIME)
     {
-        displaySetLed(true);
-        saySample(SAMPLE_ALARM_BASE + 0);
-        // saySample(SAMPLE_ALARM_BASE + 9);
-        displaySetLed(false);
+        return;
     }
-    
-    if (IS_CHANGE_BUTTON_PRESSED)
+    lastTimeSnoozeButton = millis();
+    if (!stopAlarm())
     {
-        displaySetLed(true);
-        saySample(SAMPLE_ALARM_BASE + 19);
-        displaySetLed(false);
+        snoozeButtonPressed = true;
     }
-    /*
-    displayTime(17, 45);
-    delay(2000);
-    displayTime(8, 21);
-    delay(2000);
-    displayTime(8, 22);
-    delay(2000);
-    displayTime(11, 1);
-    delay(2000);
-    displayTime(4, 20);
-    delay(2000);
-    displayDisable();
-    delay(5000);
-    displayEnable();
-    delay(1000);
-    */
+}
+
+void callbackMenuButton()
+{
+    if (millis() - lastTimeMenuButton < DEBOUNCE_TIME)
+    {
+        return;
+    }
+    lastTimeMenuButton = millis();
+    if (!stopAlarm())
+    {
+        menuButtonPressed = true;
+    }
+}
+
+void callbackChangeButton()
+{
+    if (millis() - lastTimeChangeButton < DEBOUNCE_TIME)
+    {
+        return;
+    }
+    lastTimeChangeButton = millis();
+    if (!stopAlarm())
+    {
+        changeButtonPressed = true;
+    }
+}
+
+void callbackAlarm()
+{
+    alarmTriggered = true;
+    rtc.clearAlarm(1);
+}
+
+void alarmLoop()
+{
+    if (alarmTriggered)
+    {
+        DateTime alarm = rtc.getAlarmDateTime(1);
+        for (byte i = 0; i < ALARM_MAX_LOOPS; i++)
+        {
+            delay(20);
+            displayTime(alarm.hour(), alarm.minute());
+            saySample(SAMPLE_ALARM_BASE + currentAlarm);
+            if (stopPlaying)
+            {
+                break;
+            }
+            delay(500);
+        }
+        alarmTriggered = false;
+        //         goToSleep = true;
+        //        menuExit(); //  if alarm triggered in menu, close it
+        delay(1000);
+    }
+}
+
+void timeLoop()
+{
+    DateTime now = rtc.now();
+    displayTime(now.hour(), now.minute());
+    if (snoozeButtonPressed)
+    {
+        snoozeButtonPressed = false;
+        sayTime(now.hour(), now.minute(), 0);
+    }
+    delay(100);
 }
 
 void serialLoop()

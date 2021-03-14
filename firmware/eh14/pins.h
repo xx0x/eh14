@@ -1,8 +1,8 @@
 // Buttons
-#define PIN_SNOOZE_BUTTON       14
-#define PIN_MENU_BUTTON         15
-#define PIN_CHANGE_BUTTON       16
-#define PIN_RC_SWITCH           17
+#define PIN_RC_SWITCH           14
+#define PIN_SNOOZE_BUTTON       15
+#define PIN_MENU_BUTTON         16
+#define PIN_CHANGE_BUTTON       17
 
 // Display
 #define PIN_DISPLAY_ENABLE      5
