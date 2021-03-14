@@ -96,6 +96,7 @@ void loop()
     alarmLoop();
     serialLoop();
     timeLoop();
+    menuLoop();
 }
 
 bool stopAlarm()
@@ -115,6 +116,7 @@ void callbackSnoozeButton()
         return;
     }
     lastTimeSnoozeButton = millis();
+    stopPlaying = true;
     if (!stopAlarm())
     {
         snoozeButtonPressed = true;
@@ -128,6 +130,7 @@ void callbackMenuButton()
         return;
     }
     lastTimeMenuButton = millis();
+    stopPlaying = true;
     if (!stopAlarm())
     {
         menuButtonPressed = true;
@@ -141,6 +144,7 @@ void callbackChangeButton()
         return;
     }
     lastTimeChangeButton = millis();
+    stopPlaying = true;
     if (!stopAlarm())
     {
         changeButtonPressed = true;
@@ -182,10 +186,24 @@ void timeLoop()
     displayTime(now.hour(), now.minute());
     if (snoozeButtonPressed)
     {
-        sayTime(now.hour(), now.minute(), 0);
         snoozeButtonPressed = false;
+        sayTime(now.hour(), now.minute(), 0);
     }
     delay(100);
+}
+
+void menuLoop()
+{
+    if (menuButtonPressed)
+    {
+        menuButtonPressed = false;
+        currentAlarm++;
+        if (currentAlarm >= ALARMS_COUNT)
+        {
+            currentAlarm = 0;
+        }
+        saySample(currentAlarm + SAMPLE_ALARM_BASE);
+    }
 }
 
 void serialLoop()
