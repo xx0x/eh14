@@ -1,7 +1,3 @@
-#define CLOCK_DEFAULT_HOURS 12
-#define CLOCK_DEFAULT_MINUTES 0
-#define CLOCK_RESET_WHEN_STARTUP false
-
 void clockSet(byte hr, byte min)
 {
     rtc.adjust(DateTime(2020, 3, 14, hr, min, 0));

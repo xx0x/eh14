@@ -1,53 +1,12 @@
-#include <SPIMemory.h> // modified
-#include "Adafruit_ZeroI2S.h"
 #include "pins.h"
-#include "RTClib.h" // modified
-
-#define IS_SNOOZE_BUTTON_PRESSED (digitalRead(PIN_SNOOZE_BUTTON) == LOW)
-#define IS_MENU_BUTTON_PRESSED (digitalRead(PIN_MENU_BUTTON) == LOW)
-#define IS_CHANGE_BUTTON_PRESSED (digitalRead(PIN_CHANGE_BUTTON) == LOW)
-#define IS_RC_SWITCH_ON (digitalRead(PIN_RC_SWITCH) == LOW)
-
-#define SAMPLERATE_HZ 22050
-#define MAX_SAMPLES 160
-#define Serial SERIAL_PORT_USBVIRTUAL
-
-SPIFlash flash(PIN_FLASH_CS);
-RTC_DS3231 rtc;
-Adafruit_ZeroI2S i2s(PIN_I2S_FS, PIN_I2S_SCK, PIN_I2S_TX, PIN_I2S_RX);
-
-// Volume
-#define VOLUMES_COUNT 8
-byte currentVolume = 3;
-uint32_t volumes[VOLUMES_COUNT] = {0, 500, 1000, 3000, 6000, 12000, 16000, 22000};
-
-// Alarm stuff
-#define ALARMS_COUNT alarmsCount
-#define ALARM_MAX_LOOPS 20
-byte currentAlarm = 0;
-byte alarmsCount = 0;
-byte alarmTriggered = false;
-
-// Flow
-bool goToSleep = true;
-bool menuActive = false;
-bool stopPlaying = false;
-bool isPlaying = false;
-
-// Buttons and timings
-#define DEBOUNCE_TIME 250
-bool snoozeButtonPressed = false;
-bool menuButtonPressed = false;
-bool changeButtonPressed = false;
-unsigned long lastTimeSnoozeButton = 0;
-unsigned long lastTimeMenuButton = 0;
-unsigned long lastTimeChangeButton = 0;
-#define MENU_TIMEOUT 30000
+#include "Adafruit_ZeroI2S.h"
+#include <SPIMemory.h> // modified
+#include "RTClib.h"    // modified
 
 // Include parts
+#include "./globals.h"
 #include "./display.h"
 #include "./clock.h"
-#include "./samples.h"
 #include "./flash.h"
 #include "./say.h"
 #include "./sleep.h"
@@ -66,17 +25,7 @@ void setup()
     displaySetup();
     clockSetup();
     sleepSetup(callbackSnoozeButton, callbackMenuButton, callbackChangeButton, callbackAlarm);
-
-    for (byte i = 0; i < 10; i++)
-    {
-        displaySetLed(1);
-        delay(20);
-        displaySetLed(0);
-        delay(80);
-    }
-
     flash.begin();
-
     while (!flashSetup())
     {
         displayEmpty();
@@ -86,9 +35,8 @@ void setup()
     }
 
     saySetup();
-
+    displayClockReady();
     Serial.println("EH14 ready\n");
-    // clockAlarmSet(12, 10);
 }
 
 void loop()
@@ -99,56 +47,33 @@ void loop()
     menuLoop();
 }
 
-bool stopAlarm()
+void callbackButton(byte buttonNumber)
 {
-    if (alarmTriggered)
+    if (millis() - lastTimeButton[buttonNumber] < DEBOUNCE_TIME)
     {
-        stopPlaying = true;
-        return true;
+        return;
     }
-    return false;
+    lastTimeButton[buttonNumber] = millis();
+    stopPlaying = true;
+    if (!alarmTriggered)
+    {
+        buttonPressed[buttonNumber] = true;
+    }
 }
 
 void callbackSnoozeButton()
 {
-    if (millis() - lastTimeSnoozeButton < DEBOUNCE_TIME)
-    {
-        return;
-    }
-    lastTimeSnoozeButton = millis();
-    stopPlaying = true;
-    if (!stopAlarm())
-    {
-        snoozeButtonPressed = true;
-    }
+    callbackButton(SNOOZE_BUTTON);
 }
 
 void callbackMenuButton()
 {
-    if (millis() - lastTimeMenuButton < DEBOUNCE_TIME)
-    {
-        return;
-    }
-    lastTimeMenuButton = millis();
-    stopPlaying = true;
-    if (!stopAlarm())
-    {
-        menuButtonPressed = true;
-    }
+    callbackButton(MENU_BUTTON);
 }
 
 void callbackChangeButton()
 {
-    if (millis() - lastTimeChangeButton < DEBOUNCE_TIME)
-    {
-        return;
-    }
-    lastTimeChangeButton = millis();
-    stopPlaying = true;
-    if (!stopAlarm())
-    {
-        changeButtonPressed = true;
-    }
+    callbackButton(CHANGE_BUTTON);
 }
 
 void callbackAlarm()
@@ -184,9 +109,9 @@ void timeLoop()
 {
     DateTime now = rtc.now();
     displayTime(now.hour(), now.minute());
-    if (snoozeButtonPressed)
+    if (SNOOZE_BUTTON_PRESSED)
     {
-        snoozeButtonPressed = false;
+        SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
     }
     delay(100);
@@ -194,11 +119,11 @@ void timeLoop()
 
 void menuLoop()
 {
-    if (menuButtonPressed)
+    if (MENU_BUTTON_PRESSED)
     {
-        menuButtonPressed = false;
+        MENU_BUTTON_PRESSED = false;
         currentAlarm++;
-        if (currentAlarm >= ALARMS_COUNT)
+        if (currentAlarm >= alarmsCount)
         {
             currentAlarm = 0;
         }

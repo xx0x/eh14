@@ -1,5 +1,3 @@
-#include "Arduino.h"
-
 // Display config
 #define DIGITS 4
 #define SEGMENTS 7
@@ -245,4 +243,16 @@ void displayEmpty()
     displayWriteNumber(1, LETTER_E);
     displayWriteNumber(2, LETTER_E);
     displayWriteNumber(3, LETTER_E);
+}
+
+// Flashes LED to signalize clock ready
+void displayClockReady()
+{
+    for (byte i = 0; i < 10; i++)
+    {
+        displaySetLed(1);
+        delay(20);
+        displaySetLed(0);
+        delay(80);
+    }
 }

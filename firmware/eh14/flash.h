@@ -1,18 +1,6 @@
-#define BUFFER_SIZE 8600
-#define SERIAL_MODE_NONE 0
-#define SERIAL_MODE_FLASH '@'
-#define MAX_HEADER_SIZE 1279 // 4 + 255*5
-
-byte buffer[BUFFER_SIZE];
-byte serialMode = SERIAL_MODE_NONE;
-
-uint32_t currentFlashCount = 0;
+uint32_t flashCurrentLength = 0;
 uint32_t flashAddress = 0;
-bool flashDisplayActive = false;
-
-// Samples
-uint32_t samplesLenghts[MAX_SAMPLES];
-uint32_t samplesOffsets[MAX_SAMPLES];
+bool flashLedOn = false;
 
 uint32_t flashReadInt(uint32_t address)
 {
@@ -23,7 +11,6 @@ uint32_t flashReadInt(uint32_t address)
 
 bool flashSetup()
 {
-
     Serial.print("EH14 | Flash manufacturer: ");
     Serial.println(flash.getManID());
     Serial.print("EH14 | Flash JEDEC ID: ");
@@ -36,7 +23,7 @@ bool flashSetup()
     Serial.print("EH14 | Data header length: ");
     Serial.println(flashHeaderLength);
 
-    if (flashHeaderLength > MAX_HEADER_SIZE)
+    if (flashHeaderLength > AUDIO_MAX_HEADER_SIZE)
     {
         Serial.println("EH14 | Header too long, ignoring...");
         return false;
@@ -45,7 +32,7 @@ bool flashSetup()
     uint32_t prevAddress = flashHeaderLength;
 
     // clear old stuff
-    for (byte i = 0; i < MAX_SAMPLES; i++)
+    for (byte i = 0; i < AUDIO_MAX_SAMPLES; i++)
     {
         samplesOffsets[i] = 0;
         samplesLenghts[i] = 0;
@@ -60,7 +47,7 @@ bool flashSetup()
         byte num = flash.readByte(i);
         Serial.print("Reading sample ");
         Serial.println(num);
-        if (num >= MAX_SAMPLES)
+        if (num >= AUDIO_MAX_SAMPLES)
         {
             break;
         }
@@ -80,7 +67,7 @@ bool flashSetup()
     }
 
     // display new data
-    for (byte i = 0; i < MAX_SAMPLES; i++)
+    for (byte i = 0; i < AUDIO_MAX_SAMPLES; i++)
     {
         if (samplesLenghts[i] != 0)
         {
@@ -104,18 +91,18 @@ bool flashSetup()
 
 void flashProcessByte(byte data)
 {
-    buffer[currentFlashCount] = data;
-    if (currentFlashCount >= BUFFER_SIZE)
+    audioBuffer[flashCurrentLength] = data;
+    if (flashCurrentLength >= AUDIO_BUFFER_SIZE)
     {
-        flash.writeByteArray(flashAddress - currentFlashCount, buffer, currentFlashCount);
+        flash.writeByteArray(flashAddress - flashCurrentLength, audioBuffer, flashCurrentLength);
         Serial.print(".");
-        currentFlashCount = 0;
-        flashDisplayActive = !flashDisplayActive;
-        displaySetLed(flashDisplayActive);
+        flashCurrentLength = 0;
+        flashLedOn = !flashLedOn;
+        displaySetLed(flashLedOn);
     }
     else
     {
-        currentFlashCount++;
+        flashCurrentLength++;
     }
     flashAddress++;
 }
@@ -126,7 +113,7 @@ void flashStart()
     displayFlash();
     delay(20);
     flashAddress = 0;
-    currentFlashCount = 0;
+    flashCurrentLength = 0;
     Serial.print("EH14 | Flash manufacturer: ");
     Serial.println(flash.getManID());
     Serial.print("EH14 | Flash JEDEC ID: ");
@@ -146,7 +133,7 @@ void flashEnd()
     Serial.println("EH14 | Flashing ended.");
     if (flashAddress > 0)
     {
-        flash.writeByteArray(flashAddress - currentFlashCount, buffer, currentFlashCount); // write remainings
+        flash.writeByteArray(flashAddress - flashCurrentLength, audioBuffer, flashCurrentLength); // write remainings
         Serial.print("EH14 | ");
         Serial.print(flashAddress);
         Serial.println(" bytes written.");

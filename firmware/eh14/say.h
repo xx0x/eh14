@@ -1,6 +1,11 @@
+uint32_t toRead = AUDIO_BUFFER_SIZE;
+byte rec = 0;
+int16_t sample = 0;
+uint32_t volume = 0;
+
 void saySetup()
 {
-    if (!i2s.begin(I2S_32_BIT, SAMPLERATE_HZ))
+    if (!i2s.begin(I2S_32_BIT, AUDIO_SAMPLERATE_HZ))
     {
         Serial.println("VK49 | Failed to initialize I2S.");
         while (1)
@@ -8,11 +13,6 @@ void saySetup()
     }
     i2s.enableTx();
 }
-
-uint32_t toRead = BUFFER_SIZE;
-byte rec = 0;
-int16_t sample = 0;
-uint32_t volume = 0;
 
 bool processSample(byte part)
 {
@@ -125,7 +125,7 @@ void sayTime(int hh, int mm, int ss)
 
 void sayTestAllSamples()
 {
-    for (byte i = 0; i < MAX_SAMPLES; i++)
+    for (byte i = 0; i < AUDIO_MAX_SAMPLES; i++)
     {
         if (saySample(i))
         {
