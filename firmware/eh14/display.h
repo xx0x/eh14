@@ -10,7 +10,7 @@
 #define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
-#define DIGIT_DEFINITIONS 23
+#define DIGIT_DEFINITIONS 31
 #define LETTER_A 10
 #define LETTER_B 11
 #define LETTER_C 12
@@ -23,6 +23,14 @@
 #define LETTER_J 19
 #define LETTER_K 20
 #define LETTER_L 21
+#define LETTER_M 22
+#define LETTER_N 23
+#define LETTER_O 24
+#define LETTER_P 25
+#define LETTER_Q 26
+#define LETTER_R 27
+#define LETTER_S 28
+#define LETTER_T 29
 #define LETTER_NONE (DIGIT_DEFINITIONS - 1)
 
 // Digit and char defintions
@@ -47,8 +55,16 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B01110110, // H
     B00000110, // I
     B00011110, // J
-    B01110100, // k
+    B01110101, // k
     B00111000, // L
+    B00010101, // M
+    B00110111, // N
+    B01011100, // o
+    B01110011, // P
+    B01100111, // Q
+    B00110011, // R
+    B01101101, // S
+    B01111000, // t
     B00000000, // None
 };
 
