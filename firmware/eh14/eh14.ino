@@ -7,6 +7,7 @@
 #include "./globals.h"
 #include "./display.h"
 #include "./clock.h"
+#include "./digits.h"
 #include "./flash.h"
 #include "./say.h"
 #include "./sleep.h"
@@ -41,10 +42,24 @@ void setup()
 
 void loop()
 {
-    alarmLoop();
     serialLoop();
-    timeLoop();
-    menuLoop();
+    alarmLoop();
+    if (!alarmTriggered)
+    {
+        menuLoop();
+        if (!IS_MENU_ACTIVE)
+        {
+            timeLoop();
+        }
+        /*
+        if (goToSleep)
+        {
+            goToSleep = false;
+            turnOff();
+            turnOn();
+        }
+        */
+    }
 }
 
 void callbackButton(byte buttonNumber)
@@ -117,6 +132,7 @@ void timeLoop()
     smartDelay(1000);
 }
 
+/*
 void menuLoop()
 {
     if (MENU_BUTTON_PRESSED)
@@ -130,6 +146,211 @@ void menuLoop()
         displayWriteNumbers(LETTER_B, LETTER_NONE, currentAlarm / 10, currentAlarm % 10);
         saySample(currentAlarm + SAMPLE_ALARM_BASE);
     }
+}*/
+
+byte previousBatteryState = 0;
+
+void menuLoop()
+{
+    byte helpVal = 0;
+
+    if (millis() - lastTimeButton[MENU_BUTTON] > MENU_TIMEOUT && millis() - lastTimeButton[CHANGE_BUTTON] > MENU_TIMEOUT)
+    {
+        delay(200);
+        menuExit();
+        return;
+    }
+
+    if (MENU_BUTTON_PRESSED)
+    {
+        MENU_BUTTON_PRESSED = false;
+        if (!TIME_SET_DIGITS_ACTIVE)
+        {
+            currentMenuItem++;
+        }
+        else
+        {
+            digitsNext();
+            if (timeSetCurrentDigit >= 4)
+            {
+                if (currentMenuItem == MENU_ALARM_SET)
+                {
+                    digitsSaveAsAlarm();
+                    DateTime alarm = rtc.getAlarmDateTime(1);
+                    displayTime(alarm.hour(), alarm.minute());
+                    if (saySample(SAMPLE_INTRO))
+                    {
+                        if (saySample(SAMPLE_ALARM_SET))
+                        {
+                            delay(300);
+                            if (saySample(SAMPLE_ALARM_CURRENT))
+                            {
+                                sayTime(alarm.hour(), alarm.minute(), 00, false, true);
+                            }
+                        }
+                    }
+                }
+                else if (currentMenuItem == MENU_TIME_SET)
+                {
+                    digitsSaveAsClock();
+                    DateTime now = rtc.now();
+                    displayTime(now.hour(), now.minute());
+                    if (saySample(SAMPLE_INTRO))
+                    {
+                        if (saySample(SAMPLE_TIME_SET))
+                        {
+                            delay(300);
+                            if (saySample(SAMPLE_TIME_CURRENT))
+                            {
+                                sayTime(now.hour(), now.minute(), now.second(), false, true);
+                            }
+                        }
+                    }
+                }
+                menuExit();
+                return;
+            }
+        }
+        goToSleep = false;
+        if (currentMenuItem >= MENU_ITEMS_COUNT)
+        {
+            menuExit();
+        }
+    }
+    if (!IS_MENU_ACTIVE)
+    {
+        return;
+    }
+
+    bool alarmEnabled;
+
+    switch (currentMenuItem)
+    {
+    case MENU_VOLUME: // A
+        if (CHANGE_BUTTON_PRESSED)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            currentVolume++;
+            if (currentVolume >= VOLUMES_COUNT)
+            {
+                currentVolume = 0;
+            }
+            helpVal = currentVolume + 1;
+            displayWriteNumbers(LETTER_A, LETTER_NONE, helpVal / 10, helpVal % 10);
+            saySample(SAMPLE_WARNING);
+        }
+        else
+        {
+            helpVal = currentVolume + 1;
+            displayWriteNumbers(LETTER_A, LETTER_NONE, helpVal / 10, helpVal % 10);
+        }
+        break;
+    case MENU_ALARM_SOUND: // B
+        if (CHANGE_BUTTON_PRESSED)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            if (menuAlarmHasPlayed)
+            {
+                currentAlarm++;
+            }
+            menuAlarmHasPlayed = true;
+            if (currentAlarm >= alarmsCount)
+            {
+                currentAlarm = 0;
+            }
+            helpVal = currentAlarm + 1;
+            displayWriteNumbers(LETTER_B, LETTER_NONE, helpVal / 10, helpVal % 10);
+            saySample(currentAlarm + SAMPLE_ALARM_BASE);
+        }
+        else
+        {
+            helpVal = currentAlarm + 1;
+            displayWriteNumbers(LETTER_B, LETTER_NONE, helpVal / 10, helpVal % 10);
+        }
+        break;
+    case MENU_ALARM_ON: // C
+        alarmEnabled = clockIsAlarmEnabled();
+        if (CHANGE_BUTTON_PRESSED)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            alarmEnabled = !alarmEnabled;
+            if (alarmEnabled)
+            {
+                clockEnableAlarm();
+            }
+            else
+            {
+                clockDisableAlarm();
+            }
+        }
+        if (alarmEnabled)
+        {
+            displayWriteNumbers(LETTER_C, LETTER_NONE, LETTER_O, LETTER_N);
+        }
+        else
+        {
+            displayWriteNumbers(LETTER_C, LETTER_NONE, LETTER_O, LETTER_F);
+        }
+        break;
+
+    case MENU_ALARM_SET: // D
+    case MENU_TIME_SET:  // E
+        // SET ALARM / TIME
+        if (CHANGE_BUTTON_PRESSED && !TIME_SET_DIGITS_ACTIVE)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            timeSetCurrentDigit = 0;
+            displayClear();
+            digitsPrepare(currentMenuItem == MENU_ALARM_SET);
+        }
+        else
+        {
+            if (!TIME_SET_DIGITS_ACTIVE)
+            {
+                if (currentMenuItem == MENU_ALARM_SET)
+                {
+                    displayWriteNumbers(LETTER_D, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+                }
+                else
+                {
+                    displayWriteNumbers(LETTER_E, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+                }
+            }
+            else if (timeSetCurrentDigit >= 0 && timeSetCurrentDigit <= 3)
+            {
+                if (CHANGE_BUTTON_PRESSED)
+                {
+                    CHANGE_BUTTON_PRESSED = false;
+                    digitsIncrease();
+                }
+
+                for (byte i = 0; i <= timeSetCurrentDigit; i++)
+                {
+                    displayWriteNumber(i, timeSetDigits[i]);
+                }
+            }
+        }
+
+        break;
+    case MENU_BATTERY: // F
+        displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+        break;
+    default:
+        break;
+    }
+    smartDelay(100);
+}
+
+void menuExit()
+{
+    MENU_BUTTON_PRESSED = false;
+    CHANGE_BUTTON_PRESSED = false;
+    SNOOZE_BUTTON_PRESSED = false;
+    //    goToSleep = true;
+    menuAlarmHasPlayed = false;
+    currentMenuItem = -1;
+    timeSetCurrentDigit = -1;
+    displayClear();
 }
 
 void serialLoop()

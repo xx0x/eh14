@@ -163,15 +163,21 @@ void displayWriteNumber(byte displayNumber, byte value)
 }
 
 // Clears all the displays
-void displayClear()
+void displayClear(bool force)
 {
     for (byte d = 0; d < DIGITS; d++)
     {
         for (byte s = 0; s < SEGMENTS; s++)
         {
-            displayWriteSegment(d, s, false, true);
+            displayWriteSegment(d, s, false, force);
         }
     }
+}
+
+// Clears all the displays
+void displayClear()
+{
+    displayClear(false);
 }
 
 // Displays time
@@ -205,7 +211,7 @@ void displaySetup()
     digitalWrite(PIN_DISPLAY_LED, LOW);
 
     delay(1000);
-    displayClear();
+    displayClear(true);
 }
 
 // Tests all the digits/letters

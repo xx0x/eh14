@@ -52,7 +52,7 @@ bool stopPlaying = false;
 bool isPlaying = false;
 
 // Buttons and timings
-#define DEBOUNCE_TIME 100
+#define DEBOUNCE_TIME 250
 #define MENU_TIMEOUT 30000
 
 #define BUTTONS_COUNT 3
@@ -69,6 +69,23 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 #define SNOOZE_BUTTON_PRESSED buttonPressed[SNOOZE_BUTTON]
 #define MENU_BUTTON_PRESSED buttonPressed[MENU_BUTTON]
 #define CHANGE_BUTTON_PRESSED buttonPressed[CHANGE_BUTTON]
+
+// Menu stuff
+int8_t currentMenuItem = -1;
+#define IS_MENU_ACTIVE (currentMenuItem != -1)
+#define MENU_ITEMS_COUNT 6
+#define MENU_VOLUME 0      // a
+#define MENU_ALARM_SOUND 1 // b
+#define MENU_ALARM_ON 2    // c
+#define MENU_ALARM_SET 3   // d
+#define MENU_TIME_SET 4    // e
+#define MENU_BATTERY 5     // f
+bool menuAlarmHasPlayed = false;
+
+// Time setting
+int8_t timeSetCurrentDigit = -1;
+byte timeSetDigits[4] = {0, 0, 0, 0};
+#define TIME_SET_DIGITS_ACTIVE (timeSetCurrentDigit != -1)
 
 // Clock stuff
 #define CLOCK_DEFAULT_HOURS 12
