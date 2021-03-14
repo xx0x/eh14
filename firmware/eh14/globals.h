@@ -52,7 +52,7 @@ bool stopPlaying = false;
 bool isPlaying = false;
 
 // Buttons and timings
-#define DEBOUNCE_TIME 250
+#define DEBOUNCE_TIME 100
 #define MENU_TIMEOUT 30000
 
 #define BUTTONS_COUNT 3
@@ -74,3 +74,19 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 #define CLOCK_DEFAULT_HOURS 12
 #define CLOCK_DEFAULT_MINUTES 0
 #define CLOCK_RESET_WHEN_STARTUP false
+
+// Functions
+void smartDelay(unsigned int d)
+{
+    for (unsigned int j = 0; j < d / 10; j++)
+    {
+        delay(10);
+        for (byte i = 0; i < BUTTONS_COUNT; i++)
+        {
+            if (buttonPressed[i])
+            {
+                return;
+            }
+        }
+    }
+}

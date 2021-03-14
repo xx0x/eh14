@@ -114,7 +114,7 @@ void timeLoop()
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
     }
-    delay(100);
+    smartDelay(1000);
 }
 
 void menuLoop()
