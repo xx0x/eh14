@@ -56,7 +56,7 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B01110101, // k
     B00111000, // L
     B00010101, // M
-    B00110111, // N
+    B01010100, // n
     B01011100, // o
     B01110011, // P
     B01100111, // Q

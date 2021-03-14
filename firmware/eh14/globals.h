@@ -16,7 +16,7 @@ byte serialMode = SERIAL_MODE_NONE;
 #define VOLUMES_COUNT 8
 
 byte audioBuffer[AUDIO_BUFFER_SIZE];
-uint32_t volumes[VOLUMES_COUNT] = {0, 500, 1000, 3000, 6000, 12000, 16000, 22000};
+uint32_t volumes[VOLUMES_COUNT] = {250, 500, 1000, 3000, 6000, 12000, 16000, 22000};
 byte currentVolume = 3;
 
 // Samples
@@ -80,7 +80,7 @@ int8_t currentMenuItem = -1;
 #define MENU_ALARM_SET 3   // d
 #define MENU_TIME_SET 4    // e
 #define MENU_BATTERY 5     // f
-bool menuAlarmHasPlayed = false;
+bool menuSoundHasPlayed = false;
 
 // Time setting
 int8_t timeSetCurrentDigit = -1;

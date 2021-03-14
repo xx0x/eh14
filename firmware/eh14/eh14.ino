@@ -132,40 +132,15 @@ void timeLoop()
     smartDelay(1000);
 }
 
-/*
 void menuLoop()
 {
-    if (MENU_BUTTON_PRESSED)
-    {
-        MENU_BUTTON_PRESSED = false;
-        currentAlarm++;
-        if (currentAlarm >= alarmsCount)
-        {
-            currentAlarm = 0;
-        }
-        displayWriteNumbers(LETTER_B, LETTER_NONE, currentAlarm / 10, currentAlarm % 10);
-        saySample(currentAlarm + SAMPLE_ALARM_BASE);
-    }
-}*/
-
-byte previousBatteryState = 0;
-
-void menuLoop()
-{
-    byte helpVal = 0;
-
-    if (millis() - lastTimeButton[MENU_BUTTON] > MENU_TIMEOUT && millis() - lastTimeButton[CHANGE_BUTTON] > MENU_TIMEOUT)
-    {
-        delay(200);
-        menuExit();
-        return;
-    }
 
     if (MENU_BUTTON_PRESSED)
     {
         MENU_BUTTON_PRESSED = false;
         if (!TIME_SET_DIGITS_ACTIVE)
         {
+            menuSoundHasPlayed = false;
             currentMenuItem++;
         }
         else
@@ -214,14 +189,23 @@ void menuLoop()
         goToSleep = false;
         if (currentMenuItem >= MENU_ITEMS_COUNT)
         {
-            menuExit();
+            currentMenuItem = 0;
         }
     }
+
     if (!IS_MENU_ACTIVE)
     {
         return;
     }
 
+    if ((millis() - lastTimeButton[MENU_BUTTON] > MENU_TIMEOUT && millis() - lastTimeButton[CHANGE_BUTTON] > MENU_TIMEOUT) || SNOOZE_BUTTON_PRESSED)
+    {
+        delay(200);
+        menuExit();
+        return;
+    }
+
+    byte helpVal = 0;
     bool alarmEnabled;
 
     switch (currentMenuItem)
@@ -230,7 +214,11 @@ void menuLoop()
         if (CHANGE_BUTTON_PRESSED)
         {
             CHANGE_BUTTON_PRESSED = false;
-            currentVolume++;
+            if (menuSoundHasPlayed)
+            {
+                currentVolume++;
+            }
+            menuSoundHasPlayed = true;
             if (currentVolume >= VOLUMES_COUNT)
             {
                 currentVolume = 0;
@@ -249,11 +237,11 @@ void menuLoop()
         if (CHANGE_BUTTON_PRESSED)
         {
             CHANGE_BUTTON_PRESSED = false;
-            if (menuAlarmHasPlayed)
+            if (menuSoundHasPlayed)
             {
                 currentAlarm++;
             }
-            menuAlarmHasPlayed = true;
+            menuSoundHasPlayed = true;
             if (currentAlarm >= alarmsCount)
             {
                 currentAlarm = 0;
@@ -347,7 +335,6 @@ void menuExit()
     CHANGE_BUTTON_PRESSED = false;
     SNOOZE_BUTTON_PRESSED = false;
     //    goToSleep = true;
-    menuAlarmHasPlayed = false;
     currentMenuItem = -1;
     timeSetCurrentDigit = -1;
     displayClear();
