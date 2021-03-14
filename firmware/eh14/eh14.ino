@@ -182,8 +182,8 @@ void timeLoop()
     displayTime(now.hour(), now.minute());
     if (snoozeButtonPressed)
     {
-        snoozeButtonPressed = false;
         sayTime(now.hour(), now.minute(), 0);
+        snoozeButtonPressed = false;
     }
     delay(100);
 }
