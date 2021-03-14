@@ -202,6 +202,7 @@ void menuLoop()
         {
             currentAlarm = 0;
         }
+        displayWriteNumbers(LETTER_B, LETTER_NONE, currentAlarm / 10, currentAlarm % 10);
         saySample(currentAlarm + SAMPLE_ALARM_BASE);
     }
 }

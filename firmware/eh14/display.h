@@ -185,6 +185,15 @@ void displayTime(byte hours, byte minutes)
     displayWriteNumber(3, minutes % 10);
 }
 
+// Display write 4 numbers
+void displayWriteNumbers(byte a, byte b, byte c, byte d)
+{
+    displayWriteNumber(0, a);
+    displayWriteNumber(1, b);
+    displayWriteNumber(2, c);
+    displayWriteNumber(3, d);
+}
+
 // Display preparation, clears it, takes approx 1s
 void displaySetup()
 {
