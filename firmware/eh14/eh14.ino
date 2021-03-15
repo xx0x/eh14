@@ -11,6 +11,7 @@
 #include "./flash.h"
 #include "./say.h"
 #include "./sleep.h"
+#include "./ir.h"
 
 void setup()
 {
@@ -36,14 +37,21 @@ void setup()
     }
 
     saySetup();
+    irSetup();
     displayClockReady();
+
+    // todo remove repeat, then enable this?
+    // attachInterrupt(digitalPinToInterrupt(PIN_IR), callbackIr, FALLING);
+
     Serial.println("EH14 ready\n");
 }
 
 void loop()
 {
+    irLoop();
     serialLoop();
     alarmLoop();
+
     if (!alarmTriggered)
     {
         menuLoop();
@@ -97,6 +105,14 @@ void callbackAlarm()
     rtc.clearAlarm(1);
 }
 
+void callbackIr()
+{
+    if(isPlaying && !stopPlaying){
+        Serial.println("stop playing");
+        stopPlaying = true;
+    }
+}
+
 void alarmLoop()
 {
     if (alarmTriggered)
@@ -122,6 +138,13 @@ void alarmLoop()
 
 void timeLoop()
 {
+    // don't update time more often than 1000ms
+    if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED)
+    {
+        return;
+    }
+    lastClockCheck = millis();
+
     DateTime now = rtc.now();
     displayTime(now.hour(), now.minute());
     if (SNOOZE_BUTTON_PRESSED)
@@ -129,7 +152,6 @@ void timeLoop()
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
     }
-    smartDelay(1000);
 }
 
 void menuLoop()
@@ -338,6 +360,23 @@ void menuExit()
     currentMenuItem = -1;
     timeSetCurrentDigit = -1;
     displayClear();
+}
+
+void irLoop()
+{
+    byte irValue = irRecieve();
+    switch (irValue)
+    {
+    case IR_MENU:
+        callbackMenuButton();
+        break;
+    case IR_CHANGE:
+        callbackChangeButton();
+        break;
+    case IR_SNOOZE:
+        callbackSnoozeButton();
+        break;
+    }
 }
 
 void serialLoop()

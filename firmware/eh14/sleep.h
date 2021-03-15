@@ -1,5 +1,8 @@
 
-void sleepSetup(voidFuncPtr snoozeCallback, voidFuncPtr menuCallback, voidFuncPtr changeCallback, voidFuncPtr alarmCallback)
+void sleepSetup(voidFuncPtr snoozeCallback,
+                voidFuncPtr menuCallback,
+                voidFuncPtr changeCallback,
+                voidFuncPtr alarmCallback)
 {
     byte interruptPin1 = digitalPinToInterrupt(PIN_SNOOZE_BUTTON);
     byte interruptPin2 = digitalPinToInterrupt(PIN_MENU_BUTTON);
@@ -32,9 +35,8 @@ void sleepSetup(voidFuncPtr snoozeCallback, voidFuncPtr menuCallback, voidFuncPt
     EIC->WAKEUP.reg |= (1 << interruptPin2);
     EIC->WAKEUP.reg |= (1 << interruptPin3);
     EIC->WAKEUP.reg |= (1 << interruptPin4);
-//    PM->SLEEP.reg |= PM_SLEEP_IDLE_APB;
+    //    PM->SLEEP.reg |= PM_SLEEP_IDLE_APB;
 }
-
 
 void sleepStart()
 {

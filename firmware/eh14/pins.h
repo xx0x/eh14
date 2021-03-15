@@ -19,5 +19,6 @@
 
 // Other
 #define PIN_FLASH_CS            6
-#define PIN_BATSENSE            18
+#define PIN_IR                  18
+// #define PIN_BATSENSE         18
 #define PIN_ALARM               19

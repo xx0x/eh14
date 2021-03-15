@@ -91,6 +91,15 @@ byte timeSetDigits[4] = {0, 0, 0, 0};
 #define CLOCK_DEFAULT_HOURS 12
 #define CLOCK_DEFAULT_MINUTES 0
 #define CLOCK_RESET_WHEN_STARTUP false
+#define CLOCK_CHECK_INTERVAL 1000
+unsigned long lastClockCheck = 0;
+
+// IR Commands
+#define IR_EMPTY    0
+#define IR_SNOOZE   1
+#define IR_MENU     2
+#define IR_CHANGE   3
+#define IR_SOUND    4    
 
 // Functions
 void smartDelay(unsigned int d)
