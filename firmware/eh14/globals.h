@@ -53,7 +53,7 @@ bool isPlaying = false;
 
 // Buttons and timings
 #define DEBOUNCE_TIME 250
-#define MENU_TIMEOUT 30000
+#define MENU_TIMEOUT 60000
 
 #define BUTTONS_COUNT 3
 unsigned long lastTimeButton[BUTTONS_COUNT] = {0, 0, 0};

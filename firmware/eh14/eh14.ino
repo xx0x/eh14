@@ -109,6 +109,7 @@ void callbackIrLatch()
 {
     irRecieved = 0;
     irRecievedCount = 0;
+    displaySetLed(true);
 }
 
 void callbackIrClock()
@@ -129,6 +130,7 @@ void callbackIrClock()
             callbackButton(CHANGE_BUTTON);
             break;
         }
+        displaySetLed(false);
     }
 }
 
