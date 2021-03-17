@@ -95,11 +95,12 @@ byte timeSetDigits[4] = {0, 0, 0, 0};
 unsigned long lastClockCheck = 0;
 
 // IR Commands
-#define IR_EMPTY    0
-#define IR_SNOOZE   1
-#define IR_MENU     2
-#define IR_CHANGE   3
-#define IR_SOUND    4    
+#define MESSAGE_SNOOZE 0xA1
+#define MESSAGE_MENU 0xA2
+#define MESSAGE_CHANGE 0xA3
+#define MESSAGE_SOUND 0xA4
+byte irRecieved = 0;
+byte irRecievedCount = 0;
 
 // Functions
 void smartDelay(unsigned int d)

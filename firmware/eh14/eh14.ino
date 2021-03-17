@@ -11,7 +11,6 @@
 #include "./flash.h"
 #include "./say.h"
 #include "./sleep.h"
-#include "./ir.h"
 
 void setup()
 {
@@ -19,7 +18,10 @@ void setup()
     pinMode(PIN_SNOOZE_BUTTON, INPUT_PULLUP);
     pinMode(PIN_MENU_BUTTON, INPUT_PULLUP);
     pinMode(PIN_CHANGE_BUTTON, INPUT_PULLUP);
-    pinMode(PIN_RC_SWITCH, INPUT_PULLUP);
+
+    pinMode(PIN_IR_LATCH, INPUT_PULLUP);
+    pinMode(PIN_IR_DATA, INPUT_PULLUP);
+    pinMode(PIN_IR_CLOCK, INPUT_PULLUP);
 
     Serial.begin(115200);
     Serial.println("EH14 startup\n");
@@ -37,18 +39,16 @@ void setup()
     }
 
     saySetup();
-    irSetup();
     displayClockReady();
 
-    // todo remove repeat, then enable this?
-    // attachInterrupt(digitalPinToInterrupt(PIN_IR), callbackIr, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_IR_LATCH), callbackIrLatch, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_IR_CLOCK), callbackIrClock, RISING);
 
     Serial.println("EH14 ready\n");
 }
 
 void loop()
 {
-    irLoop();
     serialLoop();
     alarmLoop();
 
@@ -105,11 +105,30 @@ void callbackAlarm()
     rtc.clearAlarm(1);
 }
 
-void callbackIr()
+void callbackIrLatch()
 {
-    if(isPlaying && !stopPlaying){
-        Serial.println("stop playing");
-        stopPlaying = true;
+    irRecieved = 0;
+    irRecievedCount = 0;
+}
+
+void callbackIrClock()
+{
+    irRecieved = bitWrite(irRecieved, 7 - irRecievedCount, digitalRead(PIN_IR_DATA));
+    irRecievedCount++;
+    if (irRecievedCount == 8)
+    {
+        switch (irRecieved)
+        {
+        case MESSAGE_SNOOZE:
+            callbackButton(SNOOZE_BUTTON);
+            break;
+        case MESSAGE_MENU:
+            callbackButton(MENU_BUTTON);
+            break;
+        case MESSAGE_CHANGE:
+            callbackButton(CHANGE_BUTTON);
+            break;
+        }
     }
 }
 
@@ -360,23 +379,6 @@ void menuExit()
     currentMenuItem = -1;
     timeSetCurrentDigit = -1;
     displayClear();
-}
-
-void irLoop()
-{
-    byte irValue = irRecieve();
-    switch (irValue)
-    {
-    case IR_MENU:
-        callbackMenuButton();
-        break;
-    case IR_CHANGE:
-        callbackChangeButton();
-        break;
-    case IR_SNOOZE:
-        callbackSnoozeButton();
-        break;
-    }
 }
 
 void serialLoop()
