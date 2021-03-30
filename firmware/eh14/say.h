@@ -5,6 +5,8 @@ uint32_t volume = 0;
 
 void saySetup()
 {
+    pinMode(PIN_SPEAKER_ENABLE, OUTPUT);
+    digitalWrite(PIN_SPEAKER_ENABLE, HIGH);
     if (!i2s.begin(I2S_32_BIT, AUDIO_SAMPLERATE_HZ))
     {
         Serial.println("VK49 | Failed to initialize I2S.");
