@@ -204,8 +204,11 @@ void displaySetup()
     pinMode(PIN_DISPLAY_LATCH, OUTPUT);
     pinMode(PIN_DISPLAY_DATA, OUTPUT);
     pinMode(PIN_DISPLAY_CLOCK, OUTPUT);
-    pinMode(PIN_DISPLAY_ENABLE, OUTPUT);
     pinMode(PIN_DISPLAY_LED, OUTPUT);
+    pinMode(PIN_DISPLAY_ENABLE, OUTPUT);
+    digitalWrite(PIN_DISPLAY_ENABLE, LOW);
+
+    displayClearAllRegisters();
 
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     digitalWrite(PIN_DISPLAY_LED, LOW);
