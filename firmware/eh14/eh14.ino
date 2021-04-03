@@ -23,10 +23,13 @@ void setup()
     pinMode(PIN_IR_DATA, INPUT_PULLUP);
     pinMode(PIN_IR_CLOCK, INPUT_PULLUP);
 
+    pinMode(PIN_LIGHT_SENSOR, INPUT);
+
+    displaySetup();
+
     Serial.begin(115200);
     Serial.println("EH14 startup\n");
 
-    displaySetup();
     clockSetup();
     sleepSetup(callbackSnoozeButton, callbackMenuButton, callbackChangeButton, callbackAlarm);
     flash.begin();
@@ -51,6 +54,7 @@ void loop()
 {
     serialLoop();
     alarmLoop();
+    silentLoop();
 
     if (!alarmTriggered)
     {
@@ -159,6 +163,11 @@ void alarmLoop()
 
 void timeLoop()
 {
+    // ignore if silent mode
+    if(silentMode && isSilent && !SNOOZE_BUTTON_PRESSED){
+        return;
+    }
+
     // don't update time more often than 1000ms
     if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED)
     {
@@ -367,6 +376,21 @@ void menuLoop()
     case MENU_BATTERY: // F
         displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_NONE, LETTER_NONE);
         break;
+    case MENU_SILENT_MODE: // G
+        if (CHANGE_BUTTON_PRESSED)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            silentMode = !silentMode;
+        }
+        if (silentMode)
+        {
+            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_N);
+        }
+        else
+        {
+            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_F);
+        }
+        break;
     default:
         break;
     }
@@ -407,4 +431,31 @@ void serialLoop()
         flashEnd();
     }
     serialMode = SERIAL_MODE_NONE;
+}
+
+void silentLoop()
+{
+    if(!silentMode){
+        return;
+    }
+
+    float lightValue;
+    for (byte i = 0; i < SILENT_MODE_MEASURES; i++)
+    {
+        lightValue += ((float)analogRead(PIN_LIGHT_SENSOR)) / SILENT_MODE_MEASURES;
+        smartDelay(120);
+    }
+    bool currentIsSilent = lightValue <= SILENT_MODE_THRESHOLD;
+    if (currentIsSilent != isSilent)
+    {
+        isSilent = currentIsSilent;
+        if (isSilent)
+        {
+            Serial.println("Silent mode activated.");
+        }
+        else
+        {
+            Serial.println("Silent mode deactivated.");
+        }
+    }
 }

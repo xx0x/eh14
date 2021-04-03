@@ -51,6 +51,12 @@ bool menuActive = false;
 bool stopPlaying = false;
 bool isPlaying = false;
 
+// Silent Mode
+#define SILENT_MODE_THRESHOLD 14
+#define SILENT_MODE_MEASURES 15
+bool silentMode = false;
+bool isSilent = false;
+
 // Buttons and timings
 #define DEBOUNCE_TIME 250
 #define MENU_TIMEOUT 60000
@@ -73,13 +79,14 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 // Menu stuff
 int8_t currentMenuItem = -1;
 #define IS_MENU_ACTIVE (currentMenuItem != -1)
-#define MENU_ITEMS_COUNT 6
+#define MENU_ITEMS_COUNT 7
 #define MENU_VOLUME 0      // a
 #define MENU_ALARM_SOUND 1 // b
 #define MENU_ALARM_ON 2    // c
 #define MENU_ALARM_SET 3   // d
 #define MENU_TIME_SET 4    // e
 #define MENU_BATTERY 5     // f
+#define MENU_SILENT_MODE 6     // g
 bool menuSoundHasPlayed = false;
 
 // Time setting
