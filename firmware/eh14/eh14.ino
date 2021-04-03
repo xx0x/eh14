@@ -181,6 +181,7 @@ void menuLoop()
     if (MENU_BUTTON_PRESSED)
     {
         MENU_BUTTON_PRESSED = false;
+        CHANGE_BUTTON_PRESSED = false;
         if (!TIME_SET_DIGITS_ACTIVE)
         {
             menuSoundHasPlayed = false;
