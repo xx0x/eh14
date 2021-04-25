@@ -13,10 +13,10 @@ byte serialMode = SERIAL_MODE_NONE;
 #define AUDIO_SAMPLERATE_HZ 22050
 #define AUDIO_BUFFER_SIZE 8600
 #define AUDIO_MAX_HEADER_SIZE 1279 // 4 + 255*5
-#define VOLUMES_COUNT 8
+#define VOLUMES_COUNT 12
 
 byte audioBuffer[AUDIO_BUFFER_SIZE];
-uint32_t volumes[VOLUMES_COUNT] = {250, 500, 1000, 3000, 6000, 12000, 16000, 22000};
+uint32_t volumes[VOLUMES_COUNT] = {250, 500, 1000, 3000, 6000, 12000, 16000, 22000, 28000, 36000, 48000, 62000};
 byte currentVolume = 3;
 
 // Samples

@@ -1,9 +1,7 @@
 #include <tiny_IRremote.h>
 
-#define DEBUG_SERIAL 1
-
 // PIN DEFINITIONS
-#define PIN_SERIAL 4
+#define PIN_ENABLED 4
 #define PIN_IR 3
 #define PIN_LATCH 0
 #define PIN_DATA 1
@@ -12,11 +10,6 @@
 // IR STUFF
 IRrecv irrecv(PIN_IR);
 decode_results results;
-
-#if DEBUG_SERIAL
-#include <SendOnlySoftwareSerial.h>
-SendOnlySoftwareSerial Serial(PIN_SERIAL);
-#endif
 
 #define IR_CODE_SNOOZE 0xF710EF
 #define IR_CODE_MENU 0xF7906F
@@ -30,16 +23,13 @@ SendOnlySoftwareSerial Serial(PIN_SERIAL);
 
 void setup()
 {
+    pinMode(PIN_ENABLED, INPUT);
     pinMode(PIN_LATCH, OUTPUT);
     pinMode(PIN_DATA, OUTPUT);
     pinMode(PIN_CLOCK, OUTPUT);
     digitalWrite(PIN_LATCH, HIGH);
     sendMessage(0);
     irrecv.enableIRIn();
-#if DEBUG_SERIAL
-    Serial.begin(9600);
-    Serial.println("EH14 IR reciever");
-#endif
 }
 
 void loop()
@@ -53,11 +43,6 @@ void loop()
 
 void processIrCode(long code)
 {
-
-#if DEBUG_SERIAL
-    Serial.println(code, HEX);
-#endif
-
     switch (code)
     {
     case IR_CODE_MENU:
@@ -96,7 +81,4 @@ void sendMessage(byte b)
     slowShiftOut(PIN_DATA, PIN_CLOCK, b);
     delay(5);
     digitalWrite(PIN_LATCH, HIGH);
-#if DEBUG_SERIAL
-    Serial.println(b);
-#endif
 }
