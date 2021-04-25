@@ -4,7 +4,7 @@
 #define PIN_CHANGE_BUTTON       17
 
 // Display
-#define PIN_DISPLAY_ENABLE      5
+#define PIN_DISPLAY_ENABLE      4
 #define PIN_DISPLAY_DATA        10
 #define PIN_DISPLAY_LATCH       11
 #define PIN_DISPLAY_CLOCK       12
@@ -30,4 +30,4 @@
 
 #define PIN_IR_LATCH    8
 #define PIN_IR_DATA    3
-#define PIN_IR_CLOCK    4 
+#define PIN_IR_CLOCK    5
