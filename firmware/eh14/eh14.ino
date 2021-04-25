@@ -31,7 +31,18 @@ void setup()
     Serial.println("EH14 startup\n");
 
     clockSetup();
-    sleepSetup(callbackSnoozeButton, callbackMenuButton, callbackChangeButton, callbackAlarm);
+
+     // IR interrupts
+    attachInterrupt(digitalPinToInterrupt(PIN_IR_LATCH), callbackIrLatch, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_IR_CLOCK), callbackIrClock, RISING);
+
+    // button interrupts
+    attachInterrupt(digitalPinToInterrupt(PIN_SNOOZE_BUTTON), callbackSnoozeButton, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_MENU_BUTTON), callbackMenuButton, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_CHANGE_BUTTON), callbackChangeButton, FALLING);
+    attachInterrupt(digitalPinToInterrupt(PIN_ALARM), callbackAlarm, FALLING);
+    
+    sleepSetup();
     flash.begin();
     while (!flashSetup())
     {
@@ -43,9 +54,6 @@ void setup()
 
     saySetup();
     displayClockReady();
-
-    attachInterrupt(digitalPinToInterrupt(PIN_IR_LATCH), callbackIrLatch, FALLING);
-    attachInterrupt(digitalPinToInterrupt(PIN_IR_CLOCK), callbackIrClock, RISING);
 
     Serial.println("EH14 ready\n");
 }

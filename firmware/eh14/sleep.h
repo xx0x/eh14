@@ -1,18 +1,6 @@
 
-void sleepSetup(voidFuncPtr snoozeCallback,
-                voidFuncPtr menuCallback,
-                voidFuncPtr changeCallback,
-                voidFuncPtr alarmCallback)
+void sleepSetup()
 {
-    byte interruptPin1 = digitalPinToInterrupt(PIN_SNOOZE_BUTTON);
-    byte interruptPin2 = digitalPinToInterrupt(PIN_MENU_BUTTON);
-    byte interruptPin3 = digitalPinToInterrupt(PIN_CHANGE_BUTTON);
-    byte interruptPin4 = digitalPinToInterrupt(PIN_ALARM);
-    attachInterrupt(interruptPin1, snoozeCallback, FALLING);
-    attachInterrupt(interruptPin2, menuCallback, FALLING);
-    attachInterrupt(interruptPin3, changeCallback, FALLING);
-    attachInterrupt(interruptPin4, alarmCallback, FALLING);
-
     // enable EIC clock
     GCLK->CLKCTRL.bit.CLKEN = 0; //disable GCLK module
     while (GCLK->STATUS.bit.SYNCBUSY)
@@ -31,10 +19,10 @@ void sleepSetup(voidFuncPtr snoozeCallback,
         ;
 
     // Enable wakeup capability on pin in case being used during sleep
-    EIC->WAKEUP.reg |= (1 << interruptPin1);
-    EIC->WAKEUP.reg |= (1 << interruptPin2);
-    EIC->WAKEUP.reg |= (1 << interruptPin3);
-    EIC->WAKEUP.reg |= (1 << interruptPin4);
+    EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_SNOOZE_BUTTON));
+    EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_MENU_BUTTON));
+    EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_CHANGE_BUTTON));
+    EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_ALARM));
     EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_IR_LATCH));
     //    PM->SLEEP.reg |= PM_SLEEP_IDLE_APB;
 }
