@@ -75,6 +75,7 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 #define SNOOZE_BUTTON_PRESSED buttonPressed[SNOOZE_BUTTON]
 #define MENU_BUTTON_PRESSED buttonPressed[MENU_BUTTON]
 #define CHANGE_BUTTON_PRESSED buttonPressed[CHANGE_BUTTON]
+#define ANY_BUTTON_PRESSED (SNOOZE_BUTTON_PRESSED || MENU_BUTTON_PRESSED || CHANGE_BUTTON_PRESSED)
 
 // Menu stuff
 int8_t currentMenuItem = -1;

@@ -32,7 +32,7 @@ void setup()
 
     clockSetup();
 
-     // IR interrupts
+    // IR interrupts
     attachInterrupt(digitalPinToInterrupt(PIN_IR_LATCH), callbackIrLatch, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_IR_CLOCK), callbackIrClock, RISING);
 
@@ -41,7 +41,7 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(PIN_MENU_BUTTON), callbackMenuButton, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_CHANGE_BUTTON), callbackChangeButton, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_ALARM), callbackAlarm, FALLING);
-    
+
     sleepSetup();
     flash.begin();
     while (!flashSetup())
@@ -189,7 +189,9 @@ void timeLoop()
     {
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
-        goToSleep = true;
+        if(!ANY_BUTTON_PRESSED){
+            goToSleep = true;
+        }
     }
 }
 
