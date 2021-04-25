@@ -35,6 +35,7 @@ void sleepSetup(voidFuncPtr snoozeCallback,
     EIC->WAKEUP.reg |= (1 << interruptPin2);
     EIC->WAKEUP.reg |= (1 << interruptPin3);
     EIC->WAKEUP.reg |= (1 << interruptPin4);
+    EIC->WAKEUP.reg |= (1 << digitalPinToInterrupt(PIN_IR_LATCH));
     //    PM->SLEEP.reg |= PM_SLEEP_IDLE_APB;
 }
 

@@ -63,14 +63,13 @@ void loop()
         {
             timeLoop();
         }
-        /*
+
         if (goToSleep)
         {
             goToSleep = false;
             turnOff();
             turnOn();
         }
-        */
     }
 }
 
@@ -155,8 +154,8 @@ void alarmLoop()
             delay(500);
         }
         alarmTriggered = false;
-        //         goToSleep = true;
-        //        menuExit(); //  if alarm triggered in menu, close it
+        goToSleep = true;
+        menuExit(); //  if alarm triggered in menu, close it
         delay(1000);
     }
 }
@@ -164,7 +163,8 @@ void alarmLoop()
 void timeLoop()
 {
     // ignore if silent mode
-    if(silentMode && isSilent && !SNOOZE_BUTTON_PRESSED){
+    if (silentMode && isSilent && !SNOOZE_BUTTON_PRESSED)
+    {
         return;
     }
 
@@ -181,6 +181,7 @@ void timeLoop()
     {
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
+        goToSleep = true;
     }
 }
 
@@ -402,10 +403,10 @@ void menuExit()
     MENU_BUTTON_PRESSED = false;
     CHANGE_BUTTON_PRESSED = false;
     SNOOZE_BUTTON_PRESSED = false;
-    //    goToSleep = true;
     currentMenuItem = -1;
     timeSetCurrentDigit = -1;
     displayClear();
+    goToSleep = true;
 }
 
 void serialLoop()
@@ -435,7 +436,8 @@ void serialLoop()
 
 void silentLoop()
 {
-    if(!silentMode){
+    if (!silentMode)
+    {
         return;
     }
 
@@ -458,4 +460,21 @@ void silentLoop()
             Serial.println("Silent mode deactivated.");
         }
     }
+}
+
+void turnOff()
+{
+    flash.powerDown();
+    digitalWrite(PIN_SPEAKER_ENABLE, LOW);
+    digitalWrite(PIN_DISPLAY_ENABLE, LOW);
+    delay(10);
+    sleepStart();
+}
+
+void turnOn()
+{
+    digitalWrite(PIN_SPEAKER_ENABLE, HIGH);
+    digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
+    flash.powerUp();
+    delay(100);
 }
