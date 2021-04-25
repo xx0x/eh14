@@ -99,7 +99,7 @@ byte timeSetDigits[4] = {0, 0, 0, 0};
 #define CLOCK_DEFAULT_HOURS 12
 #define CLOCK_DEFAULT_MINUTES 0
 #define CLOCK_RESET_WHEN_STARTUP false
-#define CLOCK_CHECK_INTERVAL 1000
+#define CLOCK_CHECK_INTERVAL 500
 unsigned long lastClockCheck = 0;
 
 // IR Commands

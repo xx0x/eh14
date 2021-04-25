@@ -2,6 +2,7 @@
 #include "Adafruit_ZeroI2S.h"
 #include <SPIMemory.h> // modified
 #include "RTClib.h"    // modified
+#include <Adafruit_SleepyDog.h>
 
 // Include parts
 #include "./globals.h"
@@ -75,8 +76,9 @@ void loop()
         if (goToSleep)
         {
             goToSleep = false;
-            turnOff();
-            turnOn();
+            if(turnOff()){
+                turnOn();
+            }
         }
     }
 }
@@ -176,7 +178,7 @@ void timeLoop()
         return;
     }
 
-    // don't update time more often than 1000ms
+    // don't update time more often than 500ms
     if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED)
     {
         return;
@@ -189,9 +191,10 @@ void timeLoop()
     {
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
-        if(!ANY_BUTTON_PRESSED){
-            goToSleep = true;
-        }
+    }
+    if (!ANY_BUTTON_PRESSED)
+    {
+        goToSleep = true;
     }
 }
 
@@ -472,19 +475,32 @@ void silentLoop()
     }
 }
 
-void turnOff()
+/**
+ * SMART SLEEPING
+ * Retrieves seconds from RTC.
+ * If time between 0 - 55, sleep for that time (if greater than 2s).
+ */
+bool turnOff()
 {
-    flash.powerDown();
-    digitalWrite(PIN_SPEAKER_ENABLE, LOW);
-    digitalWrite(PIN_DISPLAY_ENABLE, LOW);
-    delay(10);
-    sleepStart();
+    DateTime now = rtc.now();
+    int sleepFor = 55 - now.second();
+    if (sleepFor > 2)
+    {
+        flash.powerDown();
+        digitalWrite(PIN_SPEAKER_ENABLE, LOW);
+        digitalWrite(PIN_DISPLAY_ENABLE, LOW);
+        delay(10);
+        sleepStart(sleepFor * 1000);
+        return true;
+    }
+    return false;
 }
 
-void turnOn()
+bool turnOn()
 {
     digitalWrite(PIN_SPEAKER_ENABLE, HIGH);
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     flash.powerUp();
     delay(100);
+    return true;
 }

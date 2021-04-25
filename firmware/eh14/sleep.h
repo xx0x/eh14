@@ -27,11 +27,18 @@ void sleepSetup()
     //    PM->SLEEP.reg |= PM_SLEEP_IDLE_APB;
 }
 
-void sleepStart()
+// void sleepStart()
+// {
+//     USBDevice.detach();
+//     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+//     __DSB();
+//     __WFI();
+//     USBDevice.attach();
+// }
+
+void sleepStart(int sleepLength)
 {
     USBDevice.detach();
-    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
-    __DSB();
-    __WFI();
+    Watchdog.sleep(sleepLength);
     USBDevice.attach();
 }
