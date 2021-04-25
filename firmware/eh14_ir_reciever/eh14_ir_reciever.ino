@@ -1,4 +1,6 @@
 #include <tiny_IRremote.h>
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
 
 // PIN DEFINITIONS
 #define PIN_ENABLED 4
@@ -23,7 +25,7 @@ decode_results results;
 
 void setup()
 {
-    pinMode(PIN_ENABLED, INPUT);
+    pinMode(PIN_ENABLED, INPUT_PULLUP);
     pinMode(PIN_LATCH, OUTPUT);
     pinMode(PIN_DATA, OUTPUT);
     pinMode(PIN_CLOCK, OUTPUT);
@@ -36,8 +38,12 @@ void loop()
 {
     if (irrecv.decode(&results))
     {
-        processIrCode(results.value);
+        if (!digitalRead(PIN_ENABLED))
+        {
+            processIrCode(results.value);
+        }
         irrecv.resume();
+        doSleep();
     }
 }
 
@@ -81,4 +87,25 @@ void sendMessage(byte b)
     slowShiftOut(PIN_DATA, PIN_CLOCK, b);
     delay(5);
     digitalWrite(PIN_LATCH, HIGH);
+}
+
+ISR(PCINT0_vect)
+{
+}
+
+// Falling to sleep and waking up when IR sensor retrieves data.
+void doSleep()
+{
+    GIMSK |= _BV(PCIE);
+    PCMSK |= _BV(PCINT3);
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    sleep_enable();
+    sei();
+    sleep_cpu();
+
+    // Now waking up
+    cli();
+    PCMSK &= ~_BV(PCINT3);
+    sleep_disable();
+    sei();
 }
