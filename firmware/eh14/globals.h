@@ -61,12 +61,13 @@ bool isSilent = false;
 #define DEBOUNCE_TIME 250
 #define MENU_TIMEOUT 60000
 
-#define BUTTONS_COUNT 3
+#define BUTTONS_COUNT 4
 unsigned long lastTimeButton[BUTTONS_COUNT] = {0, 0, 0};
 bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 #define SNOOZE_BUTTON 0
 #define MENU_BUTTON 1
 #define CHANGE_BUTTON 2
+#define SOUND_BUTTON 3 // virtual button
 
 // #define IS_SNOOZE_BUTTON_PRESSED (digitalRead(PIN_SNOOZE_BUTTON) == LOW)
 // #define IS_MENU_BUTTON_PRESSED (digitalRead(PIN_MENU_BUTTON) == LOW)

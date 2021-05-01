@@ -68,6 +68,7 @@ void loop()
     if (!alarmTriggered)
     {
         menuLoop();
+        randomSoundLoop();
         if (!IS_MENU_ACTIVE)
         {
             timeLoop();
@@ -76,7 +77,8 @@ void loop()
         if (goToSleep)
         {
             goToSleep = false;
-            if(turnOff()){
+            if (turnOff())
+            {
                 turnOn();
             }
         }
@@ -120,6 +122,7 @@ void callbackAlarm()
 
 void callbackIrLatch()
 {
+    stopPlaying = true;
     irRecieved = 0;
     irRecievedCount = 0;
     displaySetLed(true);
@@ -141,6 +144,9 @@ void callbackIrClock()
             break;
         case MESSAGE_CHANGE:
             callbackButton(CHANGE_BUTTON);
+            break;
+        case MESSAGE_SOUND:
+            callbackButton(SOUND_BUTTON);
             break;
         }
         displaySetLed(false);
@@ -472,6 +478,16 @@ void silentLoop()
         {
             Serial.println("Silent mode deactivated.");
         }
+    }
+}
+
+void randomSoundLoop()
+{
+    if (buttonPressed[SOUND_BUTTON])
+    {
+        buttonPressed[SOUND_BUTTON] = false;
+        byte soundNumber = random(SAMPLE_ALARM_BASE, SAMPLE_ALARM_BASE + alarmsCount - 1);
+        saySample(soundNumber);
     }
 }
 
