@@ -67,8 +67,13 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
 };
 
 // In which order to change segments
-// Better for coils load than linear (and for the effect :-))
+#if NONLINEAR_SEGMENT_ORDER
+// Better for the effect?
 byte segmentOrder[SEGMENTS] = {0, 4, 1, 3, 6, 2, 5};
+#else
+// Classic
+byte segmentOrder[SEGMENTS] = {0, 1, 2, 3, 4, 5, 6};
+#endif
 
 // Which segments are currently on (as defined in digitDefinitions)
 byte prevSegments[DIGITS] = {0, 0, 0, 0};

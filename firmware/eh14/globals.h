@@ -91,6 +91,9 @@ int8_t currentMenuItem = -1;
 #define MENU_SILENT_MODE 6     // g
 bool menuSoundHasPlayed = false;
 
+// Display stuff
+#define NONLINEAR_SEGMENT_ORDER false
+
 // Time setting
 int8_t timeSetCurrentDigit = -1;
 byte timeSetDigits[4] = {0, 0, 0, 0};
