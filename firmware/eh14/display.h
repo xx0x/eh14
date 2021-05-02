@@ -213,8 +213,10 @@ void displaySetup()
     pinMode(PIN_DISPLAY_ENABLE, OUTPUT);
     digitalWrite(PIN_DISPLAY_ENABLE, LOW);
 
+    delay(100);
     displayClearAllRegisters();
 
+    delay(900);
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     digitalWrite(PIN_DISPLAY_LED, LOW);
 
