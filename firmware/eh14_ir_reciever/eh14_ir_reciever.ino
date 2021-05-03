@@ -32,6 +32,7 @@ void setup()
     digitalWrite(PIN_LATCH, HIGH);
     sendMessage(0);
     irrecv.enableIRIn();
+    doSleep();
 }
 
 void loop()
