@@ -520,7 +520,7 @@ bool turnOff()
         flash.powerDown();
         digitalWrite(PIN_SPEAKER_ENABLE, LOW);
         digitalWrite(PIN_DISPLAY_ENABLE, LOW);
-        delay(10);
+        delay(100);
         sleepStart(sleepFor * 1000);
         return true;
     }
