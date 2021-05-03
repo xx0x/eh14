@@ -31,13 +31,15 @@ uint32_t samplesOffsets[AUDIO_MAX_SAMPLES];
 #define SAMPLE_MINUTES 80
 #define SAMPLE_MINUTES1 81
 #define SAMPLE_MINUTES2_4 82
-#define SAMPLE_ALARM1 100
-#define SAMPLE_ALARM_BASE 100
 #define SAMPLE_WARNING 90
 #define SAMPLE_TIME_SET 91
 #define SAMPLE_TIME_CURRENT 92
 #define SAMPLE_ALARM_SET 93
 #define SAMPLE_ALARM_CURRENT 94
+#define SAMPLE_DING 95
+#define SAMPLE_DONG 96
+#define SAMPLE_ALARM1 100
+#define SAMPLE_ALARM_BASE 100
 
 // Alarm stuff
 #define ALARM_MAX_LOOPS 20
@@ -52,9 +54,12 @@ bool stopPlaying = false;
 bool isPlaying = false;
 
 // Silent Mode
-#define SILENT_MODE_THRESHOLD 14
-#define SILENT_MODE_MEASURES 15
-bool silentMode = false;
+#define SILENT_MODE_THRESHOLDS_COUNT 8
+#define SILENT_MODE_MEASURES 5
+#define SILENT_MODE_ENABLED (silentThreshhold > -1)
+#define SILENT_MODE_THRESHOLD (SILENT_MODE_ENABLED ? silentModeThresholds[silentThreshhold] : 0)
+int silentModeThresholds[SILENT_MODE_THRESHOLDS_COUNT] = {255, 128, 64, 32, 16, 14, 12, 9};
+int silentThreshhold = -1;
 bool isSilent = false;
 
 // Buttons and timings
@@ -88,8 +93,10 @@ int8_t currentMenuItem = -1;
 #define MENU_ALARM_SET 3   // d
 #define MENU_TIME_SET 4    // e
 #define MENU_BATTERY 5     // f
-#define MENU_SILENT_MODE 6     // g
+#define MENU_SILENT_MODE 6 // g
 bool menuSoundHasPlayed = false;
+#define STATUS_LED_DISABLED (currentMenuItem == MENU_SILENT_MODE)
+bool exitedFromMenu = false;
 
 // Display stuff
 #define NONLINEAR_SEGMENT_ORDER false

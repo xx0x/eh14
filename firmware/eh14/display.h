@@ -240,7 +240,9 @@ void displayTest()
 // Turns on/off the status LED
 void displaySetLed(bool ledState)
 {
-    digitalWrite(PIN_DISPLAY_LED, ledState);
+    if(!STATUS_LED_DISABLED){
+        digitalWrite(PIN_DISPLAY_LED, ledState);
+    }
 }
 
 // Display "flash" message

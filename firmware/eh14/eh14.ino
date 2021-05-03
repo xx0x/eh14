@@ -179,16 +179,18 @@ void alarmLoop()
 void timeLoop()
 {
     // ignore if silent mode
-    if (silentMode && isSilent && !SNOOZE_BUTTON_PRESSED)
+    if (SILENT_MODE_ENABLED && isSilent && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
     {
         return;
     }
 
     // don't update time more often than 500ms
-    if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED)
+    if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
     {
         return;
     }
+
+    exitedFromMenu = false;
     lastClockCheck = millis();
 
     DateTime now = rtc.now();
@@ -400,15 +402,19 @@ void menuLoop()
         if (CHANGE_BUTTON_PRESSED)
         {
             CHANGE_BUTTON_PRESSED = false;
-            silentMode = !silentMode;
+            silentThreshhold++;
+            if (silentThreshhold >= SILENT_MODE_THRESHOLDS_COUNT)
+            {
+                silentThreshhold = -1;
+            }
         }
-        if (silentMode)
+        if (!SILENT_MODE_ENABLED)
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_N);
+            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_F);
         }
         else
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_F);
+            displayWriteNumbers(LETTER_G, LETTER_NONE, 0, silentThreshhold + 1);
         }
         break;
     default:
@@ -425,6 +431,7 @@ void menuExit()
     currentMenuItem = -1;
     timeSetCurrentDigit = -1;
     displayClear();
+    exitedFromMenu = true;
     goToSleep = true;
 }
 
@@ -455,7 +462,7 @@ void serialLoop()
 
 void silentLoop()
 {
-    if (!silentMode)
+    if (!SILENT_MODE_ENABLED)
     {
         return;
     }
@@ -464,7 +471,7 @@ void silentLoop()
     for (byte i = 0; i < SILENT_MODE_MEASURES; i++)
     {
         lightValue += ((float)analogRead(PIN_LIGHT_SENSOR)) / SILENT_MODE_MEASURES;
-        smartDelay(120);
+        smartDelay(50);
     }
     bool currentIsSilent = lightValue <= SILENT_MODE_THRESHOLD;
     if (currentIsSilent != isSilent)
@@ -473,9 +480,17 @@ void silentLoop()
         if (isSilent)
         {
             Serial.println("Silent mode activated.");
+            if (currentMenuItem == MENU_SILENT_MODE)
+            {
+                sayDong();
+            }
         }
         else
         {
+              if (currentMenuItem == MENU_SILENT_MODE)
+            {
+                sayDing();
+            }
             Serial.println("Silent mode deactivated.");
         }
     }

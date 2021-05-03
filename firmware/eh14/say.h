@@ -135,3 +135,11 @@ void sayTestAllSamples()
         }
     }
 }
+
+void sayDing(){
+    saySample(SAMPLE_DING);
+}
+
+void sayDong(){
+    saySample(SAMPLE_DONG);
+}
