@@ -283,6 +283,7 @@ void menuLoop()
 
     byte helpVal = 0;
     bool alarmEnabled;
+    DateTime retrievedTime;
 
     switch (currentMenuItem)
     {
@@ -373,12 +374,16 @@ void menuLoop()
             {
                 if (currentMenuItem == MENU_ALARM_SET)
                 {
-                    displayWriteNumbers(LETTER_D, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+                    helpVal = LETTER_D;
+                    retrievedTime = rtc.getAlarmDateTime(1);
+                }else{
+                    helpVal = LETTER_E;
+                    retrievedTime = rtc.now();
                 }
-                else
-                {
-                    displayWriteNumbers(LETTER_E, LETTER_NONE, LETTER_NONE, LETTER_NONE);
-                }
+                displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.hour() / 10, retrievedTime.hour() % 10);
+                smartDelay(4000);
+                displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.minute() / 10, retrievedTime.minute() % 10);
+                smartDelay(4000);
             }
             else if (timeSetCurrentDigit >= 0 && timeSetCurrentDigit <= 3)
             {
