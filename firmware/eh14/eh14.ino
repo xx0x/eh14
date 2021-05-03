@@ -74,7 +74,7 @@ void loop()
             timeLoop();
         }
 
-        if (goToSleep)
+        if (goToSleep && !silentModeHighPower)
         {
             goToSleep = false;
             if (turnOff())
@@ -406,7 +406,16 @@ void menuLoop()
             silentThreshhold++;
             if (silentThreshhold >= SILENT_MODE_THRESHOLDS_COUNT)
             {
-                silentThreshhold = -1;
+                if (silentModeHighPower)
+                {
+                    silentModeHighPower = false;
+                    silentThreshhold = -1;
+                }
+                else
+                {
+                    silentModeHighPower = true;
+                    silentThreshhold = 0;
+                }
             }
         }
         if (!SILENT_MODE_ENABLED)
@@ -415,7 +424,7 @@ void menuLoop()
         }
         else
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, 0, silentThreshhold + 1);
+            displayWriteNumbers(LETTER_G, LETTER_NONE, silentModeHighPower ? LETTER_H : LETTER_L, silentThreshhold + 1);
         }
         break;
     default:
@@ -488,7 +497,7 @@ void silentLoop()
         }
         else
         {
-              if (currentMenuItem == MENU_SILENT_MODE)
+            if (currentMenuItem == MENU_SILENT_MODE)
             {
                 sayDing();
             }

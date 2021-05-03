@@ -59,6 +59,7 @@ bool isPlaying = false;
 #define SILENT_MODE_ENABLED (silentThreshhold > -1)
 #define SILENT_MODE_THRESHOLD (SILENT_MODE_ENABLED ? silentModeThresholds[silentThreshhold] : 0)
 int silentModeThresholds[SILENT_MODE_THRESHOLDS_COUNT] = {255, 128, 64, 32, 16, 14, 12, 9};
+bool silentModeHighPower = false;
 int silentThreshhold = -1;
 bool isSilent = false;
 
