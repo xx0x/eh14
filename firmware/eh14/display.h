@@ -210,16 +210,13 @@ void displaySetup()
     pinMode(PIN_DISPLAY_DATA, OUTPUT);
     pinMode(PIN_DISPLAY_CLOCK, OUTPUT);
     pinMode(PIN_DISPLAY_LED, OUTPUT);
+    digitalWrite(PIN_DISPLAY_LED, LOW);
     pinMode(PIN_DISPLAY_ENABLE, OUTPUT);
     digitalWrite(PIN_DISPLAY_ENABLE, LOW);
-
     delay(100);
     displayClearAllRegisters();
-
-    delay(900);
+    delay(100);
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
-    digitalWrite(PIN_DISPLAY_LED, LOW);
-
     delay(1000);
     displayClear(true);
 }
@@ -240,7 +237,8 @@ void displayTest()
 // Turns on/off the status LED
 void displaySetLed(bool ledState)
 {
-    if(!STATUS_LED_DISABLED){
+    if (!STATUS_LED_DISABLED)
+    {
         digitalWrite(PIN_DISPLAY_LED, ledState);
     }
 }
@@ -266,7 +264,7 @@ void displayEmpty()
 // Flashes LED to signalize clock ready
 void displayClockReady()
 {
-    for (byte i = 0; i < 10; i++)
+    for (byte i = 0; i < 3; i++)
     {
         displaySetLed(1);
         delay(20);
