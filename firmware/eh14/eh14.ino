@@ -181,6 +181,7 @@ void timeLoop()
     // ignore if silent mode
     if (SILENT_MODE_ENABLED && isSilent && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
     {
+        goToSleep = true;
         return;
     }
 
