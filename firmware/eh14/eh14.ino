@@ -377,14 +377,19 @@ void menuLoop()
                 {
                     helpVal = LETTER_D;
                     retrievedTime = rtc.getAlarmDateTime(1);
-                }else{
+                }
+                else
+                {
                     helpVal = LETTER_E;
                     retrievedTime = rtc.now();
                 }
                 displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.hour() / 10, retrievedTime.hour() % 10);
                 smartDelay(4000);
-                displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.minute() / 10, retrievedTime.minute() % 10);
-                smartDelay(4000);
+                if (!ANY_BUTTON_PRESSED)
+                {
+                    displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.minute() / 10, retrievedTime.minute() % 10);
+                    smartDelay(4000);
+                }
             }
             else if (timeSetCurrentDigit >= 0 && timeSetCurrentDigit <= 3)
             {
@@ -450,7 +455,8 @@ void menuExit(bool saveSettingsToFlash)
     exitedFromMenu = true;
     goToSleep = true;
 
-    if(saveSettingsToFlash){
+    if (saveSettingsToFlash)
+    {
         flashSaveSettings();
         delay(50);
     }
