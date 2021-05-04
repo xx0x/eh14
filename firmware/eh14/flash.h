@@ -19,7 +19,8 @@ bool flashSetup()
     Serial.println(flash.getCapacity());
     Serial.println("");
 
-    uint32_t flashHeaderLength = flashReadInt(0);
+    // Audio data starts at SETTINGS_HEADER_LENGTH addrs (after settings stored in flash memory)
+    uint32_t flashHeaderLength = flashReadInt(SETTINGS_HEADER_LENGTH);
     Serial.print("EH14 | Data header length: ");
     Serial.println(flashHeaderLength);
 
@@ -29,7 +30,7 @@ bool flashSetup()
         return false;
     }
 
-    uint32_t prevAddress = flashHeaderLength;
+    uint32_t prevAddress = flashHeaderLength + SETTINGS_HEADER_LENGTH;
 
     // clear old stuff
     for (byte i = 0; i < AUDIO_MAX_SAMPLES; i++)
@@ -42,7 +43,7 @@ bool flashSetup()
     alarmsCount = 0;
 
     // read new data
-    for (uint16_t i = 4; i < flashHeaderLength; i += 5)
+    for (uint32_t i = 4 + SETTINGS_HEADER_LENGTH; i < flashHeaderLength + SETTINGS_HEADER_LENGTH; i += 5)
     {
         byte num = flash.readByte(i);
         Serial.print("Reading sample ");
@@ -112,7 +113,7 @@ void flashStart()
     delay(20);
     displayFlash();
     delay(20);
-    flashAddress = 0;
+    flashAddress = SETTINGS_HEADER_LENGTH;
     flashCurrentLength = 0;
     Serial.print("EH14 | Flash manufacturer: ");
     Serial.println(flash.getManID());
@@ -131,7 +132,7 @@ void flashEnd()
 {
     Serial.println("");
     Serial.println("EH14 | Flashing ended.");
-    if (flashAddress > 0)
+    if (flashAddress > SETTINGS_HEADER_LENGTH)
     {
         flash.writeByteArray(flashAddress - flashCurrentLength, audioBuffer, flashCurrentLength); // write remainings
         Serial.print("EH14 | ");
@@ -139,5 +140,78 @@ void flashEnd()
         Serial.println(" bytes written.");
         flashSetup();
         displayClear();
+    }
+}
+
+void flashLoadSettings()
+{
+    byte settings[SETTINGS_HEADER_LENGTH_REAL];
+    flash.readByteArray(0, settings, SETTINGS_HEADER_LENGTH_REAL, false);
+    currentVolume = settings[SETTINGS_HEADER_VOLUME] < VOLUMES_COUNT ? settings[SETTINGS_HEADER_VOLUME] : currentVolume;
+    currentAlarm = settings[SETTINGS_HEADER_ALARM] < alarmsCount ? settings[SETTINGS_HEADER_ALARM] : currentAlarm;
+    silentThreshhold = settings[SETTINGS_HEADER_SILENT_THRESHOLD] < SILENT_MODE_THRESHOLDS_COUNT ? settings[SETTINGS_HEADER_SILENT_THRESHOLD] : silentThreshhold;
+    silentModeHighPower = settings[SETTINGS_HEADER_SILENT_HIGH_POWER] == 1;
+    currentSnoozeMode = settings[SETTINGS_HEADER_SNOOZE_MODE] < SNOOZE_MODES ? settings[SETTINGS_HEADER_SNOOZE_MODE] : currentSnoozeMode;
+    Serial.println("Reading settings from flash: ");
+    for (byte i = 0; i < SETTINGS_HEADER_LENGTH_REAL; i++)
+    {
+        Serial.print(settings[i], HEX);
+        Serial.print(" ");
+    }
+}
+
+bool flashSettingsHasChanged()
+{
+    byte settings[SETTINGS_HEADER_LENGTH_REAL];
+    flash.readByteArray(0, settings, SETTINGS_HEADER_LENGTH_REAL, false);
+    return !(
+        settings[SETTINGS_HEADER_VOLUME] == currentVolume &&
+        settings[SETTINGS_HEADER_ALARM] == currentAlarm &&
+        settings[SETTINGS_HEADER_SILENT_THRESHOLD] == silentThreshhold &&
+        settings[SETTINGS_HEADER_SILENT_HIGH_POWER] == (silentModeHighPower ? 1 : 0) &&
+        settings[SETTINGS_HEADER_SNOOZE_MODE] == currentSnoozeMode);
+}
+
+void flashSaveSettings()
+{
+    if (!flashSettingsHasChanged())
+    {
+        Serial.println("Settings same, not saving to flash.");
+        return;
+    }
+
+    byte settings[SETTINGS_HEADER_LENGTH_REAL];
+    settings[SETTINGS_HEADER_VOLUME] = currentVolume;
+    settings[SETTINGS_HEADER_ALARM] = currentAlarm;
+    settings[SETTINGS_HEADER_SILENT_THRESHOLD] = silentThreshhold;
+    settings[SETTINGS_HEADER_SILENT_HIGH_POWER] = silentModeHighPower ? 1 : 0;
+    settings[SETTINGS_HEADER_SNOOZE_MODE] = currentSnoozeMode;
+
+    Serial.print("Flash erase sector 0 ");
+    if (flash.eraseSector(0))
+    {
+        Serial.println(" ... OK");
+    }
+    else
+    {
+        Serial.println(" ... not OK");
+    }
+
+    delay(10);
+
+    Serial.println("Saving settings to flash: ");
+    for (byte i = 0; i < SETTINGS_HEADER_LENGTH_REAL; i++)
+    {
+        Serial.print(settings[i], HEX);
+        Serial.print(" ");
+    }
+
+    if (flash.writeByteArray(0, settings, SETTINGS_HEADER_LENGTH_REAL, true))
+    {
+        Serial.println(" ... OK");
+    }
+    else
+    {
+        Serial.println(" ... not OK");
     }
 }

@@ -9,6 +9,16 @@ Adafruit_ZeroI2S i2s(PIN_I2S_FS, PIN_I2S_SCK, PIN_I2S_TX, PIN_I2S_RX);
 #define SERIAL_MODE_FLASH '@'
 byte serialMode = SERIAL_MODE_NONE;
 
+// Flash stuff
+#define SETTINGS_HEADER_LENGTH 4096
+#define SETTINGS_HEADER_LENGTH_REAL 5
+#define SETTINGS_HEADER_VOLUME 0
+#define SETTINGS_HEADER_ALARM 1
+#define SETTINGS_HEADER_SILENT_THRESHOLD 2
+#define SETTINGS_HEADER_SILENT_HIGH_POWER 3
+#define SETTINGS_HEADER_SNOOZE_MODE 4
+
+
 // Audio stuff
 #define AUDIO_SAMPLERATE_HZ 22050
 #define AUDIO_BUFFER_SIZE 8600
@@ -41,6 +51,11 @@ uint32_t samplesOffsets[AUDIO_MAX_SAMPLES];
 #define SAMPLE_ALARM1 100
 #define SAMPLE_ALARM_BASE 100
 
+// Snooze stuff
+#define SNOOZE_MODES 4
+byte currentSnoozeMode = 1;
+byte snoozeModes[SNOOZE_MODES] = {0, 10, 20, 60};
+
 // Alarm stuff
 #define ALARM_MAX_LOOPS 20
 byte currentAlarm = 0;
@@ -56,11 +71,11 @@ bool isPlaying = false;
 // Silent Mode
 #define SILENT_MODE_THRESHOLDS_COUNT 8
 #define SILENT_MODE_MEASURES 5
-#define SILENT_MODE_ENABLED (silentThreshhold > -1)
-#define SILENT_MODE_THRESHOLD (SILENT_MODE_ENABLED ? silentModeThresholds[silentThreshhold] : 0)
+#define SILENT_MODE_ENABLED (silentThreshhold > 0)
+#define SILENT_MODE_THRESHOLD (SILENT_MODE_ENABLED ? silentModeThresholds[silentThreshhold - 1] : 0)
 int silentModeThresholds[SILENT_MODE_THRESHOLDS_COUNT] = {255, 128, 64, 32, 16, 14, 12, 9};
 bool silentModeHighPower = false;
-int silentThreshhold = -1;
+byte silentThreshhold = 0;
 bool isSilent = false;
 
 // Buttons and timings

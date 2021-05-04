@@ -54,8 +54,9 @@ void setup()
     }
 
     saySetup();
-    displayClockReady();
+    flashLoadSettings();
 
+    displayClockReady();
     Serial.println("EH14 ready\n");
 }
 
@@ -171,7 +172,7 @@ void alarmLoop()
         }
         alarmTriggered = false;
         goToSleep = true;
-        menuExit(); //  if alarm triggered in menu, close it
+        menuExit(false); //  if alarm triggered in menu, close it
         delay(1000);
     }
 }
@@ -258,7 +259,7 @@ void menuLoop()
                         }
                     }
                 }
-                menuExit();
+                menuExit(true);
                 return;
             }
         }
@@ -277,7 +278,7 @@ void menuLoop()
     if ((millis() - lastTimeButton[MENU_BUTTON] > MENU_TIMEOUT && millis() - lastTimeButton[CHANGE_BUTTON] > MENU_TIMEOUT) || SNOOZE_BUTTON_PRESSED)
     {
         delay(200);
-        menuExit();
+        menuExit(true);
         return;
     }
 
@@ -409,17 +410,17 @@ void menuLoop()
         {
             CHANGE_BUTTON_PRESSED = false;
             silentThreshhold++;
-            if (silentThreshhold >= SILENT_MODE_THRESHOLDS_COUNT)
+            if (silentThreshhold > SILENT_MODE_THRESHOLDS_COUNT)
             {
                 if (silentModeHighPower)
                 {
                     silentModeHighPower = false;
-                    silentThreshhold = -1;
+                    silentThreshhold = 0;
                 }
                 else
                 {
                     silentModeHighPower = true;
-                    silentThreshhold = 0;
+                    silentThreshhold = 1;
                 }
             }
         }
@@ -429,7 +430,7 @@ void menuLoop()
         }
         else
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, silentModeHighPower ? LETTER_H : LETTER_L, silentThreshhold + 1);
+            displayWriteNumbers(LETTER_G, LETTER_NONE, silentModeHighPower ? LETTER_H : LETTER_L, silentThreshhold);
         }
         break;
     default:
@@ -438,7 +439,7 @@ void menuLoop()
     smartDelay(100);
 }
 
-void menuExit()
+void menuExit(bool saveSettingsToFlash)
 {
     MENU_BUTTON_PRESSED = false;
     CHANGE_BUTTON_PRESSED = false;
@@ -448,6 +449,11 @@ void menuExit()
     displayClear();
     exitedFromMenu = true;
     goToSleep = true;
+
+    if(saveSettingsToFlash){
+        flashSaveSettings();
+        delay(50);
+    }
 }
 
 void serialLoop()
