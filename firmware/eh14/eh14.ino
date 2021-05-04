@@ -61,7 +61,7 @@ void setup()
     displayClear();
     displayClockReady();
     SNOOZE_BUTTON_PRESSED = true;
-    
+
     Serial.println("EH14 ready\n");
 }
 
@@ -80,7 +80,7 @@ void loop()
             timeLoop();
         }
 
-        if (goToSleep && !silentModeHighPower)
+        if (goToSleep && !silentModeHighPower && !ANY_BUTTON_PRESSED)
         {
             goToSleep = false;
             if (turnOff())
@@ -308,7 +308,11 @@ void menuLoop()
             }
             helpVal = currentVolume + 1;
             displayWriteNumbers(LETTER_A, LETTER_NONE, helpVal / 10, helpVal % 10);
-            saySample(SAMPLE_WARNING);
+            smartDelay(300);
+            if (!ANY_BUTTON_PRESSED)
+            {
+                saySample(SAMPLE_WARNING);
+            }
         }
         else
         {
