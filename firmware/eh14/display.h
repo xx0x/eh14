@@ -8,7 +8,7 @@
 #define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
-#define DIGIT_DEFINITIONS 31
+#define DIGIT_DEFINITIONS 37
 #define LETTER_A 10
 #define LETTER_B 11
 #define LETTER_C 12
@@ -29,9 +29,16 @@
 #define LETTER_R 27
 #define LETTER_S 28
 #define LETTER_T 29
+#define LETTER_U 30
+#define LETTER_V 31
+#define LETTER_W 32
+#define LETTER_X 33
+#define LETTER_Y 34
+#define LETTER_Z 35
 #define LETTER_NONE (DIGIT_DEFINITIONS - 1)
 
 // Digit and char defintions
+// the segments are stored as bits from end, clockwise
 byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B00111111, // 0
     B00000110, // 1
@@ -63,6 +70,12 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B00110011, // R
     B01101101, // S
     B01111000, // t
+    B00111110, // U
+    B00011100, // v
+    B00011101, // w
+    B01110110, // X
+    B01110010, // Y
+    B01011011, // Z
     B00000000, // None
 };
 
@@ -157,14 +170,20 @@ void displayWriteSegment(byte displayNumber, byte segmentNumber, bool state)
     displayWriteSegment(displayNumber, segmentNumber, state, false);
 }
 
-// Writes a number to a display
-void displayWriteNumber(byte displayNumber, byte value)
+// Writes a number to a display (force value?)
+void displayWriteNumber(byte displayNumber, byte value, bool force)
 {
     // non-linear segments changing (as defined in segmentOrder)
     for (byte i = 0; i < SEGMENTS; i++)
     {
-        displayWriteSegment(displayNumber, segmentOrder[i], bitRead(digitDefinitions[value], segmentOrder[i]));
+        displayWriteSegment(displayNumber, segmentOrder[i], bitRead(digitDefinitions[value], segmentOrder[i]), force);
     }
+}
+
+// Writes a number to a display
+void displayWriteNumber(byte displayNumber, byte value)
+{
+    displayWriteNumber(displayNumber, value, false);
 }
 
 // Clears all the displays
@@ -219,6 +238,11 @@ void displaySetup()
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     delay(1000);
     displayClear(true);
+    delay(100);
+    displayWriteNumber(0, LETTER_E);
+    displayWriteNumber(1, LETTER_H);
+    displayWriteNumber(2, 1);
+    displayWriteNumber(3, 4);
 }
 
 // Tests all the digits/letters

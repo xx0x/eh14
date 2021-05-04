@@ -56,7 +56,12 @@ void setup()
     saySetup();
     flashLoadSettings();
 
+    saySample(SAMPLE_ALARM_BASE);
+    delay(100);
+    displayClear();
     displayClockReady();
+    SNOOZE_BUTTON_PRESSED = true;
+    
     Serial.println("EH14 ready\n");
 }
 
