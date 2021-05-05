@@ -12,6 +12,7 @@
 #include "./flash.h"
 #include "./say.h"
 #include "./sleep.h"
+#include "./battery.h"
 
 void setup()
 {
@@ -220,6 +221,7 @@ void menuLoop()
     {
         MENU_BUTTON_PRESSED = false;
         CHANGE_BUTTON_PRESSED = false;
+        prevBatteryMeasure = BATTERY_NO_MEASURE;
         if (!TIME_SET_DIGITS_ACTIVE)
         {
             menuSoundHasPlayed = false;
@@ -417,7 +419,16 @@ void menuLoop()
 
         break;
     case MENU_BATTERY: // F
-        displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+        if (prevBatteryMeasure == BATTERY_NO_MEASURE)
+        {
+            displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+            smartDelay(300);
+        }
+        helpVal = readBattery();
+        prevBatteryMeasure = helpVal;
+        smartDelay(10);
+        displayWriteNumbers(LETTER_F, LETTER_NONE, (helpVal / 10) % 10, helpVal % 10);
+        smartDelay(5000);
         break;
     case MENU_SILENT_MODE: // G
         if (CHANGE_BUTTON_PRESSED)

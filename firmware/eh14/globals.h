@@ -137,6 +137,12 @@ unsigned long lastClockCheck = 0;
 byte irRecieved = 0;
 byte irRecievedCount = 0;
 
+// Battery stuff
+#define BATTERY_MEASURE_MAX 3905
+#define BATTERY_MEASURE_MIN 3000
+#define BATTERY_NO_MEASURE 255
+byte prevBatteryMeasure = BATTERY_NO_MEASURE;
+
 // Functions
 void smartDelay(unsigned int d)
 {
