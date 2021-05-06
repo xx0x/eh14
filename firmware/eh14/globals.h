@@ -16,8 +16,7 @@ byte serialMode = SERIAL_MODE_NONE;
 #define SETTINGS_HEADER_ALARM 1
 #define SETTINGS_HEADER_SILENT_THRESHOLD 2
 #define SETTINGS_HEADER_SILENT_HIGH_POWER 3
-#define SETTINGS_HEADER_SNOOZE_MODE 4
-
+#define SETTINGS_HEADER_ALARM_LOOPS 4
 
 // Audio stuff
 #define AUDIO_SAMPLERATE_HZ 22050
@@ -51,13 +50,12 @@ uint32_t samplesOffsets[AUDIO_MAX_SAMPLES];
 #define SAMPLE_ALARM1 100
 #define SAMPLE_ALARM_BASE 100
 
-// Snooze stuff
-#define SNOOZE_MODES 4
-byte currentSnoozeMode = 1;
-byte snoozeModes[SNOOZE_MODES] = {0, 10, 20, 60};
+// Alarm
+#define ALARMS_LOOPS 4
+byte currentAlarmLoops = 1;
+byte alarmsLoops[ALARMS_LOOPS] = {0, 10, 20, 60};
 
-// Alarm stuff
-#define ALARM_MAX_LOOPS 20
+#define ALARM_MAX_LOOPS alarmsLoops[currentAlarmLoops]
 byte currentAlarm = 0;
 byte alarmsCount = 0;
 byte alarmTriggered = false;
@@ -102,14 +100,15 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 // Menu stuff
 int8_t currentMenuItem = -1;
 #define IS_MENU_ACTIVE (currentMenuItem != -1)
-#define MENU_ITEMS_COUNT 7
-#define MENU_VOLUME 0      // a
-#define MENU_ALARM_SOUND 1 // b
-#define MENU_ALARM_ON 2    // c
-#define MENU_ALARM_SET 3   // d
-#define MENU_TIME_SET 4    // e
-#define MENU_BATTERY 5     // f
-#define MENU_SILENT_MODE 6 // g
+#define MENU_ITEMS_COUNT 8
+#define MENU_VOLUME 0        // a
+#define MENU_ALARM_SOUND 1   // b
+#define MENU_ALARM_ON 2      // c
+#define MENU_ALARM_SET 3     // d
+#define MENU_TIME_SET 4      // e
+#define MENU_SILENT_MODE 5   // f
+#define MENU_ALARM_LOOPS 6 // g
+#define MENU_BATTERY 7       // h
 bool menuSoundHasPlayed = false;
 #define STATUS_LED_DISABLED (currentMenuItem == MENU_SILENT_MODE)
 bool exitedFromMenu = false;

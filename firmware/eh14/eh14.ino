@@ -165,16 +165,29 @@ void alarmLoop()
     if (alarmTriggered)
     {
         DateTime alarm = rtc.getAlarmDateTime(1);
-        for (byte i = 0; i < ALARM_MAX_LOOPS; i++)
+        if (ALARM_MAX_LOOPS > 0)
         {
-            delay(20);
-            displayTime(alarm.hour(), alarm.minute());
-            saySample(SAMPLE_ALARM_BASE + currentAlarm);
-            if (stopPlaying)
+            for (byte i = 0; i < ALARM_MAX_LOOPS; i++)
             {
-                break;
+                delay(20);
+                displayTime(alarm.hour(), alarm.minute());
+                saySample(SAMPLE_ALARM_BASE + currentAlarm);
+                if (stopPlaying)
+                {
+                    break;
+                }
+                delay(500);
             }
-            delay(500);
+        }
+        else
+        {
+            while (!stopPlaying)
+            {
+                delay(20);
+                displayTime(alarm.hour(), alarm.minute());
+                saySample(SAMPLE_ALARM_BASE + currentAlarm);
+                delay(500);
+            }
         }
         alarmTriggered = false;
         goToSleep = true;
@@ -418,19 +431,7 @@ void menuLoop()
         }
 
         break;
-    case MENU_BATTERY: // F
-        if (prevBatteryMeasure == BATTERY_NO_MEASURE)
-        {
-            displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_NONE, LETTER_NONE);
-            smartDelay(300);
-        }
-        helpVal = readBattery();
-        prevBatteryMeasure = helpVal;
-        smartDelay(10);
-        displayWriteNumbers(LETTER_F, LETTER_NONE, (helpVal / 10) % 10, helpVal % 10);
-        smartDelay(5000);
-        break;
-    case MENU_SILENT_MODE: // G
+    case MENU_SILENT_MODE: // F
         if (CHANGE_BUTTON_PRESSED)
         {
             CHANGE_BUTTON_PRESSED = false;
@@ -451,12 +452,43 @@ void menuLoop()
         }
         if (!SILENT_MODE_ENABLED)
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_F);
+            displayWriteNumbers(LETTER_F, LETTER_NONE, LETTER_O, LETTER_F);
         }
         else
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, silentModeHighPower ? LETTER_H : LETTER_L, silentThreshhold);
+            displayWriteNumbers(LETTER_F, LETTER_NONE, silentModeHighPower ? LETTER_H : LETTER_L, silentThreshhold);
         }
+        break;
+    case MENU_ALARM_LOOPS: // G
+        if (CHANGE_BUTTON_PRESSED)
+        {
+            CHANGE_BUTTON_PRESSED = false;
+            currentAlarmLoops++;
+            if (currentAlarmLoops >= ALARMS_LOOPS)
+            {
+                currentAlarmLoops = 0;
+            }
+        }
+        if (ALARM_MAX_LOOPS > 0)
+        {
+            displayWriteNumbers(LETTER_G, LETTER_NONE, (ALARM_MAX_LOOPS / 10) % 10, ALARM_MAX_LOOPS % 10);
+        }
+        else
+        {
+            displayWriteNumbers(LETTER_G, LETTER_NONE, LETTER_O, LETTER_O);
+        }
+        break;
+    case MENU_BATTERY: // H
+        if (prevBatteryMeasure == BATTERY_NO_MEASURE)
+        {
+            displayWriteNumbers(LETTER_H, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+            smartDelay(300);
+        }
+        helpVal = readBattery();
+        prevBatteryMeasure = helpVal;
+        smartDelay(10);
+        displayWriteNumbers(LETTER_H, LETTER_NONE, (helpVal / 10) % 10, helpVal % 10);
+        smartDelay(5000);
         break;
     default:
         break;
