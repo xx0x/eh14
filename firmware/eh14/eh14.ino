@@ -181,6 +181,7 @@ void alarmLoop()
         }
         else
         {
+            stopPlaying = false;
             while (!stopPlaying)
             {
                 delay(20);
