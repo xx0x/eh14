@@ -135,6 +135,7 @@ unsigned long lastClockCheck = 0;
 #define MESSAGE_SOUND 0xA4
 byte irRecieved = 0;
 byte irRecievedCount = 0;
+bool irNowRecieving = false;
 
 // Battery stuff
 #define BATTERY_MEASURE_MAX 3905

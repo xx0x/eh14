@@ -81,7 +81,7 @@ void loop()
             timeLoop();
         }
 
-        if (goToSleep && !silentModeHighPower && !ANY_BUTTON_PRESSED)
+        if (goToSleep && !silentModeHighPower && !ANY_BUTTON_PRESSED && !irNowRecieving)
         {
             goToSleep = false;
             if (turnOff())
@@ -132,6 +132,7 @@ void callbackIrLatch()
     stopPlaying = true;
     irRecieved = 0;
     irRecievedCount = 0;
+    irNowRecieving = true;
     displaySetLed(true);
 }
 
@@ -158,6 +159,7 @@ void callbackIrClock()
         }
         displaySetLed(false);
     }
+    irNowRecieving = false;
 }
 
 void alarmLoop()
@@ -222,10 +224,7 @@ void timeLoop()
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
     }
-    if (!ANY_BUTTON_PRESSED)
-    {
-        goToSleep = true;
-    }
+    goToSleep = true;
 }
 
 void menuLoop()
