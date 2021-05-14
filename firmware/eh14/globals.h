@@ -76,10 +76,14 @@ bool silentModeHighPower = false;
 byte silentThreshhold = 0;
 bool isSilent = false;
 
-// Buttons and timings
+// Timings
 #define DEBOUNCE_TIME 250
 #define MENU_TIMEOUT 60000
+#define CHANGE_CLICK_DISPLAY_CLEAR_TIMING 3000
+#define SWAP_HOURS_MINUTES_IN_MENU_TIMING 2000
+#define BATTERY_WAIT_BETWEEN_MEASURES_TIMING 5000
 
+// Buttons
 #define BUTTONS_COUNT 4
 unsigned long lastTimeButton[BUTTONS_COUNT] = {0, 0, 0};
 bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
@@ -88,10 +92,6 @@ bool buttonPressed[BUTTONS_COUNT] = {false, false, false};
 #define CHANGE_BUTTON 2
 #define SOUND_BUTTON 3 // virtual button
 
-// #define IS_SNOOZE_BUTTON_PRESSED (digitalRead(PIN_SNOOZE_BUTTON) == LOW)
-// #define IS_MENU_BUTTON_PRESSED (digitalRead(PIN_MENU_BUTTON) == LOW)
-// #define IS_CHANGE_BUTTON_PRESSED (digitalRead(PIN_CHANGE_BUTTON) == LOW)
-// #define IS_RC_SWITCH_ON (digitalRead(PIN_RC_SWITCH) == LOW)
 #define SNOOZE_BUTTON_PRESSED buttonPressed[SNOOZE_BUTTON]
 #define MENU_BUTTON_PRESSED buttonPressed[MENU_BUTTON]
 #define CHANGE_BUTTON_PRESSED buttonPressed[CHANGE_BUTTON]

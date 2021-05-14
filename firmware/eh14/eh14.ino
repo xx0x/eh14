@@ -201,6 +201,12 @@ void alarmLoop()
 
 void timeLoop()
 {
+    if(CHANGE_BUTTON_PRESSED){
+        CHANGE_BUTTON_PRESSED = false;
+        displayClearBackwards();
+        smartDelay(CHANGE_CLICK_DISPLAY_CLEAR_TIMING);
+    }
+
     // ignore if silent mode
     if (SILENT_MODE_ENABLED && isSilent && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
     {
@@ -287,6 +293,8 @@ void menuLoop()
         if (currentMenuItem >= MENU_ITEMS_COUNT)
         {
             currentMenuItem = 0;
+            displayClearBackwards();
+            smartDelay(100);
         }
     }
 
@@ -408,11 +416,16 @@ void menuLoop()
                     retrievedTime = rtc.now();
                 }
                 displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.hour() / 10, retrievedTime.hour() % 10);
-                smartDelay(4000);
+                smartDelay(SWAP_HOURS_MINUTES_IN_MENU_TIMING);
                 if (!ANY_BUTTON_PRESSED)
                 {
                     displayWriteNumbers(helpVal, LETTER_NONE, retrievedTime.minute() / 10, retrievedTime.minute() % 10);
-                    smartDelay(4000);
+                    smartDelay(SWAP_HOURS_MINUTES_IN_MENU_TIMING);
+                }
+                if (!ANY_BUTTON_PRESSED)
+                {
+                    displayWriteNumbers(helpVal, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+                    smartDelay(SWAP_HOURS_MINUTES_IN_MENU_TIMING);
                 }
             }
             else if (timeSetCurrentDigit >= 0 && timeSetCurrentDigit <= 3)
@@ -481,14 +494,14 @@ void menuLoop()
     case MENU_BATTERY: // H
         if (prevBatteryMeasure == BATTERY_NO_MEASURE)
         {
-            displayWriteNumbers(LETTER_H, LETTER_NONE, LETTER_NONE, LETTER_NONE);
+            displayWriteNumbers(LETTER_H, LETTER_NONE, LETTER_UNDERLINE, LETTER_UNDERLINE);
             smartDelay(300);
         }
         helpVal = readBattery();
         prevBatteryMeasure = helpVal;
         smartDelay(10);
         displayWriteNumbers(LETTER_H, LETTER_NONE, (helpVal / 10) % 10, helpVal % 10);
-        smartDelay(5000);
+        smartDelay(BATTERY_WAIT_BETWEEN_MEASURES_TIMING);
         break;
     default:
         break;

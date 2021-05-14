@@ -2,13 +2,12 @@
 #define DIGITS 4
 #define SEGMENTS 7
 #define BETWEEN_TIME 60      // YOU MAY CHANGE THIS
-#define FAST_BETWEEN_TIME 10 // YOU MAY CHANGE THIS
 #define HOLD_TIME 1          // DON'T CHANGE THIS AT ALL
 #define SEG_ON 9             // DON'T CHANGE THIS AT ALL
 #define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
-#define DIGIT_DEFINITIONS 37
+#define DIGIT_DEFINITIONS 39
 #define LETTER_A 10
 #define LETTER_B 11
 #define LETTER_C 12
@@ -35,6 +34,8 @@
 #define LETTER_X 33
 #define LETTER_Y 34
 #define LETTER_Z 35
+#define LETTER_UNDERLINE 36
+#define LETTER_DASH 37
 #define LETTER_NONE (DIGIT_DEFINITIONS - 1)
 
 // Digit and char defintions
@@ -76,6 +77,8 @@ byte digitDefinitions[DIGIT_DEFINITIONS] = {
     B01110110, // X
     B01110010, // Y
     B01011011, // Z
+    B00001000, // _
+    B01000000, // -
     B00000000, // None
 };
 
@@ -202,6 +205,24 @@ void displayClear(bool force)
 void displayClear()
 {
     displayClear(false);
+}
+
+// Clears all the displays backwards
+void displayClearBackwards(bool force)
+{
+    for (byte d = 0; d < DIGITS; d++)
+    {
+        for (byte s = 0; s < SEGMENTS; s++)
+        {
+            displayWriteSegment(DIGITS - d - 1, SEGMENTS - s - 1, false, force);
+        }
+    }
+}
+
+// Clears all the displays backwards
+void displayClearBackwards()
+{
+    displayClearBackwards(false);
 }
 
 // Displays time
