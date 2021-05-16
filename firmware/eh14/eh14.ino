@@ -178,7 +178,7 @@ void alarmLoop()
                 {
                     break;
                 }
-                delay(500);
+                delay(WAIT_BETWEEN_ALARMS);
             }
         }
         else
@@ -189,7 +189,7 @@ void alarmLoop()
                 delay(20);
                 displayTime(alarm.hour(), alarm.minute());
                 saySample(SAMPLE_ALARM_BASE + currentAlarm);
-                delay(500);
+                delay(WAIT_BETWEEN_ALARMS);
             }
         }
         alarmTriggered = false;

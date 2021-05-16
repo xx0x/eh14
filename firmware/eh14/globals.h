@@ -82,6 +82,7 @@ bool isSilent = false;
 #define CHANGE_CLICK_DISPLAY_CLEAR_TIMING 3000
 #define SWAP_HOURS_MINUTES_IN_MENU_TIMING 2000
 #define BATTERY_WAIT_BETWEEN_MEASURES_TIMING 5000
+#define WAIT_BETWEEN_ALARMS 500
 
 // Buttons
 #define BUTTONS_COUNT 4
@@ -122,7 +123,7 @@ byte timeSetDigits[4] = {0, 0, 0, 0};
 #define TIME_SET_DIGITS_ACTIVE (timeSetCurrentDigit != -1)
 
 // Clock stuff
-#define CLOCK_DEFAULT_HOURS 12
+#define CLOCK_DEFAULT_HOURS 0
 #define CLOCK_DEFAULT_MINUTES 0
 #define CLOCK_RESET_WHEN_STARTUP false
 #define CLOCK_CHECK_INTERVAL 500
