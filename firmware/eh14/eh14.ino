@@ -17,34 +17,39 @@
 void setup()
 {
     analogReadResolution(12);
+
+    // inputs and outputs (more specified in *.h files)
     pinMode(PIN_SNOOZE_BUTTON, INPUT_PULLUP);
     pinMode(PIN_MENU_BUTTON, INPUT_PULLUP);
     pinMode(PIN_CHANGE_BUTTON, INPUT_PULLUP);
-
     pinMode(PIN_IR_LATCH, INPUT_PULLUP);
     pinMode(PIN_IR_DATA, INPUT_PULLUP);
     pinMode(PIN_IR_CLOCK, INPUT_PULLUP);
-
     pinMode(PIN_LIGHT_SENSOR, INPUT);
 
+    // clears the display and shows "EH14"
     displaySetup();
 
     Serial.begin(115200);
     Serial.println("EH14 startup\n");
 
+    // Starts clock (if battery disconnected in the meantime, reset to 00:00)
     clockSetup();
 
     // IR interrupts
     attachInterrupt(digitalPinToInterrupt(PIN_IR_LATCH), callbackIrLatch, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_IR_CLOCK), callbackIrClock, RISING);
 
-    // button interrupts
+    // Button interrupts
     attachInterrupt(digitalPinToInterrupt(PIN_SNOOZE_BUTTON), callbackSnoozeButton, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_MENU_BUTTON), callbackMenuButton, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_CHANGE_BUTTON), callbackChangeButton, FALLING);
     attachInterrupt(digitalPinToInterrupt(PIN_ALARM), callbackAlarm, FALLING);
 
+    // Prepares interrups for waking up
     sleepSetup();
+
+    // Starts flash, calculates samples' offsets
     flash.begin();
     while (!flashSetup())
     {
@@ -54,21 +59,31 @@ void setup()
         delay(1000);
     }
 
+    // Starts I2S AMP
     saySetup();
+
+    // Load settings stored in flash (volumne, alarm number...)
     flashLoadSettings();
 
+    // Intro music - says first alarm sample
     saySample(SAMPLE_ALARM_BASE);
     delay(100);
+    
+    // Clears display
     displayClear();
+
+    // Flashes status led
     displayClockReady();
 
     Serial.println("EH14 ready\n");
 
+    // Displays and says current time
     DateTime now = rtc.now();
     displayTime(now.hour(), now.minute());
     sayTime(now.hour(), now.minute(), 0);
 }
 
+// Main loop references partial loops
 void loop()
 {
     serialLoop();
@@ -175,9 +190,9 @@ void alarmLoop()
     if (alarmTriggered)
     {
         DateTime alarm = rtc.getAlarmDateTime(1);
-        if (ALARM_MAX_LOOPS > 0)
+        if (ALARM_CURRENT_LOOPS > 0)
         {
-            for (byte i = 0; i < ALARM_MAX_LOOPS; i++)
+            for (byte i = 0; i < ALARM_CURRENT_LOOPS; i++)
             {
                 delay(20);
                 displayTime(alarm.hour(), alarm.minute());
@@ -485,15 +500,15 @@ void menuLoop()
         if (CHANGE_BUTTON_PRESSED)
         {
             CHANGE_BUTTON_PRESSED = false;
-            currentAlarmLoops++;
-            if (currentAlarmLoops >= ALARMS_LOOPS)
+            currentAlarmLoopSetting++;
+            if (currentAlarmLoopSetting >= ALARMS_LOOPS_COUNT)
             {
-                currentAlarmLoops = 0;
+                currentAlarmLoopSetting = 0;
             }
         }
-        if (ALARM_MAX_LOOPS > 0)
+        if (ALARM_CURRENT_LOOPS > 0)
         {
-            displayWriteNumbers(LETTER_G, LETTER_NONE, (ALARM_MAX_LOOPS / 10) % 10, ALARM_MAX_LOOPS % 10);
+            displayWriteNumbers(LETTER_G, LETTER_NONE, (ALARM_CURRENT_LOOPS / 10) % 10, ALARM_CURRENT_LOOPS % 10);
         }
         else
         {

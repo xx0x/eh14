@@ -7,7 +7,7 @@
 #define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
-#define DIGIT_DEFINITIONS 39
+#define DIGIT_DEFINITIONS_COUNT 39
 #define LETTER_A 10
 #define LETTER_B 11
 #define LETTER_C 12
@@ -36,11 +36,11 @@
 #define LETTER_Z 35
 #define LETTER_UNDERLINE 36
 #define LETTER_DASH 37
-#define LETTER_NONE (DIGIT_DEFINITIONS - 1)
+#define LETTER_NONE (DIGIT_DEFINITIONS_COUNT - 1)
 
 // Digit and char defintions
 // the segments are stored as bits from end, clockwise
-byte digitDefinitions[DIGIT_DEFINITIONS] = {
+byte digitDefinitions[DIGIT_DEFINITIONS_COUNT] = {
     B00111111, // 0
     B00000110, // 1
     B01011011, // 2
@@ -269,7 +269,7 @@ void displaySetup()
 // Tests all the digits/letters
 void displayTest()
 {
-    for (byte i = 0; i < DIGIT_DEFINITIONS; i++)
+    for (byte i = 0; i < DIGIT_DEFINITIONS_COUNT; i++)
     {
         for (byte d = 0; d < DIGITS; d++)
         {
