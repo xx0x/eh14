@@ -293,7 +293,7 @@ void menuLoop()
         if (currentMenuItem >= MENU_ITEMS_COUNT)
         {
             currentMenuItem = 0;
-            displayClearBackwards();
+            displayClear();
             smartDelay(100);
         }
     }
