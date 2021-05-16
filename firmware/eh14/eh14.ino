@@ -61,20 +61,28 @@ void setup()
     delay(100);
     displayClear();
     displayClockReady();
-    SNOOZE_BUTTON_PRESSED = true;
 
     Serial.println("EH14 ready\n");
+
+    DateTime now = rtc.now();
+    displayTime(now.hour(), now.minute());
+    sayTime(now.hour(), now.minute(), 0);
 }
 
 void loop()
 {
     serialLoop();
     alarmLoop();
-    silentLoop();
 
     if (!alarmTriggered)
     {
         menuLoop();
+    }
+
+    silentLoop();
+
+    if (!alarmTriggered)
+    {
         randomSoundLoop();
         if (!IS_MENU_ACTIVE)
         {
@@ -201,14 +209,15 @@ void alarmLoop()
 
 void timeLoop()
 {
-    if(CHANGE_BUTTON_PRESSED){
+    if (CHANGE_BUTTON_PRESSED)
+    {
         CHANGE_BUTTON_PRESSED = false;
         displayClearBackwards();
         smartDelay(CHANGE_CLICK_DISPLAY_CLEAR_TIMING);
     }
 
     // ignore if silent mode
-    if (SILENT_MODE_ENABLED && isSilent && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
+    if (SILENT_MODE_ENABLED && isSilent && !SNOOZE_BUTTON_PRESSED)
     {
         goToSleep = true;
         return;
@@ -585,6 +594,11 @@ void silentLoop()
             }
             Serial.println("Silent mode deactivated.");
         }
+    }
+
+    if (!IS_MENU_ACTIVE && isSilent)
+    {
+        displayWriteNumbers(LETTER_DASH, LETTER_DASH, LETTER_DASH, LETTER_DASH);
     }
 }
 
