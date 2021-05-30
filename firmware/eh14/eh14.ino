@@ -631,7 +631,8 @@ void silentLoop()
         smartDelay(50);
     }
     bool currentIsSilent = lightValue <= SILENT_MODE_THRESHOLD;
-    if (currentIsSilent != isSilent)
+    int lightDiff = lightValue - SILENT_MODE_THRESHOLD;
+    if (currentIsSilent != isSilent && (!isSilent || lightDiff > 2))
     {
         isSilent = currentIsSilent;
         if (isSilent)
