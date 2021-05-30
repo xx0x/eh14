@@ -135,6 +135,7 @@ void flashEnd()
         Serial.print("Total bytes: ");
         Serial.println(flashAddress);
         flashSetup();
+        displaySetLed(false);
         displayClear();
     }
 }
