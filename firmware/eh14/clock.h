@@ -1,6 +1,11 @@
+void clockSet(byte hr, byte min, byte ss)
+{
+    rtc.adjust(DateTime(2020, 3, 31, hr, min, ss));
+}
+
 void clockSet(byte hr, byte min)
 {
-    rtc.adjust(DateTime(2020, 3, 14, hr, min, 0));
+    clockSet(hr, min, 0);
 }
 
 void clockAlarmSet(byte hr, byte min)

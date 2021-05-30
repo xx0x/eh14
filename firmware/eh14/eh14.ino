@@ -68,7 +68,7 @@ void setup()
     // Intro music - says first alarm sample
     saySample(SAMPLE_ALARM_BASE);
     delay(100);
-    
+
     // Clears display
     displayClear();
 
@@ -553,27 +553,68 @@ void menuExit(bool saveSettingsToFlash)
 
 void serialLoop()
 {
-    while (Serial.available() > 0)
+    byte serialMode = SERIAL_MODE_NONE;
+    byte serialBuffer[64];
+    byte serialBufferPos = 0;
+
+    do
     {
-        byte inByte = Serial.read();
-        switch (serialMode)
+        while (Serial.available() > 0)
         {
-        case SERIAL_MODE_FLASH:
-            flashProcessByte(inByte);
-            break;
-        default:
-            serialMode = inByte;
-            if (serialMode == SERIAL_MODE_FLASH)
+            lastTimeSerialRecieved = millis();
+            byte inByte = Serial.read();
+            switch (serialMode)
             {
-                flashStart();
+            case SERIAL_MODE_FLASH:
+                flashProcessByte(inByte);
+                break;
+            case SERIAL_MODE_SET_TIME:
+                serialBuffer[serialBufferPos] = inByte;
+                serialBufferPos++;
+                break;
+            default:
+                serialMode = inByte;
+                if (serialMode == SERIAL_MODE_FLASH)
+                {
+                    flashStart();
+                }
+                if (serialMode == SERIAL_MODE_DEVICE)
+                {
+                    Serial.println("Device: EH14");
+                    Serial.print("Capacity: ");
+                    Serial.println((flash.getCapacity() - SETTINGS_HEADER_LENGTH));
+                }
+                if (serialMode == SERIAL_MODE_SET_TIME)
+                {
+                    serialBufferPos = 0;
+                }
             }
         }
-    }
-    if (serialMode == SERIAL_MODE_FLASH)
+    } while (millis() - lastTimeSerialRecieved <= SERIAL_TIMEOUT_MODE);
+
+    DateTime now;
+    switch (serialMode)
     {
+    case SERIAL_MODE_FLASH:
         flashEnd();
+        break;
+    case SERIAL_MODE_SET_TIME:
+        clockSet(serialBuffer[0] * 10 + serialBuffer[1], serialBuffer[2] * 10 + serialBuffer[3], serialBuffer[4] * 10 + serialBuffer[5]);
+        now = rtc.now();
+        displayTime(now.hour(), now.minute());
+        if (saySample(SAMPLE_INTRO))
+        {
+            if (saySample(SAMPLE_TIME_SET))
+            {
+                delay(300);
+                if (saySample(SAMPLE_TIME_CURRENT))
+                {
+                    sayTime(now.hour(), now.minute(), now.second(), false, true);
+                }
+            }
+        }
+        break;
     }
-    serialMode = SERIAL_MODE_NONE;
 }
 
 void silentLoop()

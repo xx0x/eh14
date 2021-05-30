@@ -5,9 +5,12 @@ Adafruit_ZeroI2S i2s(PIN_I2S_FS, PIN_I2S_SCK, PIN_I2S_TX, PIN_I2S_RX);
 
 // Serial communication stuff
 #define Serial SERIAL_PORT_USBVIRTUAL
+unsigned long lastTimeSerialRecieved = 0;
 #define SERIAL_MODE_NONE 0
 #define SERIAL_MODE_FLASH '@'
-byte serialMode = SERIAL_MODE_NONE;
+#define SERIAL_MODE_DEVICE '?'
+#define SERIAL_MODE_SET_TIME '%'
+#define SERIAL_TIMEOUT_MODE 1000
 
 // Flash stuff
 #define SETTINGS_HEADER_LENGTH 4096
