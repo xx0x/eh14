@@ -317,3 +317,15 @@ void displayClockReady()
         delay(80);
     }
 }
+
+// Flashes LED to signalize low battery
+void displayBatteryLow()
+{
+    for (byte i = 0; i < 2; i++)
+    {
+        displaySetLed(1);
+        delay(40);
+        displaySetLed(0);
+        delay(120);
+    }
+}

@@ -253,6 +253,10 @@ void timeLoop()
     {
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
+        smartDelay(200);
+        if(readBattery() < BATTERY_LOW){
+            displayBatteryLow();
+        }        
     }
     goToSleep = true;
 }

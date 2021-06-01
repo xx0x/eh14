@@ -145,6 +145,7 @@ bool irNowRecieving = false;
 #define BATTERY_MEASURE_MAX 3905
 #define BATTERY_MEASURE_MIN 3000
 #define BATTERY_NO_MEASURE 255
+#define BATTERY_LOW 20
 byte prevBatteryMeasure = BATTERY_NO_MEASURE;
 
 // Functions
