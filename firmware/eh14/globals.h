@@ -29,7 +29,7 @@ unsigned long lastTimeSerialRecieved = 0;
 
 byte audioBuffer[AUDIO_BUFFER_SIZE];
 uint32_t volumes[VOLUMES_COUNT] = {250, 500, 1000, 3000, 6000, 12000, 16000, 22000, 28000, 36000, 48000, 62000};
-byte currentVolume = 3;
+byte currentVolume = 5;
 
 // Samples
 #define AUDIO_MAX_SAMPLES 160
