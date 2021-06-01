@@ -55,7 +55,7 @@ uint32_t samplesOffsets[AUDIO_MAX_SAMPLES];
 
 // Alarm
 #define ALARMS_LOOPS_COUNT 4
-byte currentAlarmLoopSetting = 1;
+byte currentAlarmLoopSetting = 2;
 byte alarmsLoops[ALARMS_LOOPS_COUNT] = {0, 10, 20, 60};
 
 #define ALARM_CURRENT_LOOPS alarmsLoops[currentAlarmLoopSetting]
