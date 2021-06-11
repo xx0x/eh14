@@ -6,7 +6,7 @@ There aren't all the assets listed here, the repository is meant as an inspirati
 
 ## Introduction video (in Czech)
 
-[![Video introduction](https://github.com/xx0x/eh14/raw/master/docs/eh14-video.jpg)](http://www.youtube.com/watch?v=cbuomJwm30c "Video introduction")
+[![Video introduction](https://github.com/xx0x/eh14/raw/main/docs/eh14-video.jpg)](http://www.youtube.com/watch?v=cbuomJwm30c "Video introduction")
 
 ## Product website
 
