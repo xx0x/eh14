@@ -629,7 +629,7 @@ void silentLoop()
         return;
     }
 
-    float lightValue;
+    float lightValue = 0;
     for (byte i = 0; i < SILENT_MODE_MEASURES; i++)
     {
         lightValue += ((float)analogRead(PIN_LIGHT_SENSOR)) / SILENT_MODE_MEASURES;
