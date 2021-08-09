@@ -117,7 +117,7 @@ void loop()
 
 void callbackButton(byte buttonNumber)
 {
-    if (millis() - lastTimeButton[buttonNumber] < DEBOUNCE_TIME)
+    if ((millis() - lastTimeButton[buttonNumber] < DEBOUNCE_TIME) && millis() >= lastTimeButton[buttonNumber])
     {
         return;
     }
@@ -239,7 +239,7 @@ void timeLoop()
     }
 
     // don't update time more often than 500ms
-    if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu)
+    if ((millis() - lastClockCheck < CLOCK_CHECK_INTERVAL) && !SNOOZE_BUTTON_PRESSED && !exitedFromMenu && millis() >= lastClockCheck)
     {
         return;
     }
@@ -254,9 +254,10 @@ void timeLoop()
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
         smartDelay(200);
-        if(readBattery() < BATTERY_LOW){
+        if (readBattery() < BATTERY_LOW)
+        {
             displayBatteryLow();
-        }        
+        }
     }
     goToSleep = true;
 }
