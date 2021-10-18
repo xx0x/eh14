@@ -685,7 +685,7 @@ bool turnOff()
     int sleepFor = 55 - now.second();
     if (sleepFor > 2)
     {
-        flash.powerDown();
+        // flash.powerDown();
         digitalWrite(PIN_SPEAKER_ENABLE, LOW);
         digitalWrite(PIN_DISPLAY_ENABLE, LOW);
         delay(100);
@@ -697,9 +697,10 @@ bool turnOff()
 
 bool turnOn()
 {
-    digitalWrite(PIN_SPEAKER_ENABLE, HIGH);
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
-    flash.powerUp();
-    delay(100);
+    delay(150);
+    digitalWrite(PIN_SPEAKER_ENABLE, HIGH);
+    // flash.powerUp();
+    delay(150);
     return true;
 }
