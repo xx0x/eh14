@@ -14,12 +14,13 @@ unsigned long lastTimeSerialRecieved = 0;
 
 // Flash stuff
 #define SETTINGS_HEADER_LENGTH 4096
-#define SETTINGS_HEADER_LENGTH_REAL 5
+#define SETTINGS_HEADER_LENGTH_REAL 6
 #define SETTINGS_HEADER_VOLUME 0
 #define SETTINGS_HEADER_ALARM 1
 #define SETTINGS_HEADER_SILENT_THRESHOLD 2
 #define SETTINGS_HEADER_SILENT_HIGH_POWER 3
 #define SETTINGS_HEADER_ALARM_LOOPS 4
+#define SETTINGS_HEADER_INTRO_ENABLED 5
 
 // Audio stuff
 #define AUDIO_SAMPLERATE_HZ 22050
@@ -82,7 +83,7 @@ bool isSilent = false;
 // Timings
 #define DEBOUNCE_TIME 250
 #define MENU_TIMEOUT 60000
-#define CHANGE_CLICK_DISPLAY_CLEAR_TIMING 3000
+#define CHANGE_CLICK_DISPLAY_CLEAR_TIMING 5000
 #define SWAP_HOURS_MINUTES_IN_MENU_TIMING 2000
 #define BATTERY_WAIT_BETWEEN_MEASURES_TIMING 5000
 #define WAIT_BETWEEN_ALARMS 500
@@ -147,6 +148,9 @@ bool irNowRecieving = false;
 #define BATTERY_NO_MEASURE 255
 #define BATTERY_LOW 20
 byte prevBatteryMeasure = BATTERY_NO_MEASURE;
+
+// Startup stuff
+bool currentIntroEnabled = false;
 
 // Functions
 void smartDelay(unsigned int d)

@@ -1,10 +1,10 @@
 // Display config
 #define DIGITS 4
 #define SEGMENTS 7
-#define BETWEEN_TIME 60      // YOU MAY CHANGE THIS
-#define HOLD_TIME 1          // DON'T CHANGE THIS AT ALL
-#define SEG_ON 9             // DON'T CHANGE THIS AT ALL
-#define SEG_OFF 6            // DON'T CHANGE THIS AT ALL
+#define BETWEEN_TIME 60 // YOU MAY CHANGE THIS
+#define HOLD_TIME 1     // DON'T CHANGE THIS AT ALL
+#define SEG_ON 9        // DON'T CHANGE THIS AT ALL
+#define SEG_OFF 6       // DON'T CHANGE THIS AT ALL
 
 // Total digit definitions
 #define DIGIT_DEFINITIONS_COUNT 39
@@ -226,12 +226,18 @@ void displayClearBackwards()
 }
 
 // Displays time
+void displayTime(byte hours, byte minutes, bool force)
+{
+    displayWriteNumber(0, hours / 10, force);
+    displayWriteNumber(1, hours % 10, force);
+    displayWriteNumber(2, minutes / 10, force);
+    displayWriteNumber(3, minutes % 10, force);
+}
+
+// Displays time
 void displayTime(byte hours, byte minutes)
 {
-    displayWriteNumber(0, hours / 10);
-    displayWriteNumber(1, hours % 10);
-    displayWriteNumber(2, minutes / 10);
-    displayWriteNumber(3, minutes % 10);
+    displayTime(hours, minutes, false);
 }
 
 // Display write 4 numbers
@@ -246,6 +252,7 @@ void displayWriteNumbers(byte a, byte b, byte c, byte d)
 // Display preparation, clears it, takes approx 1s
 void displaySetup()
 {
+    delay(200);
     pinMode(PIN_DISPLAY_LATCH, OUTPUT);
     pinMode(PIN_DISPLAY_DATA, OUTPUT);
     pinMode(PIN_DISPLAY_CLOCK, OUTPUT);
@@ -258,8 +265,10 @@ void displaySetup()
     delay(100);
     digitalWrite(PIN_DISPLAY_ENABLE, HIGH);
     delay(1000);
-    displayClear(true);
-    delay(100);
+}
+
+void displayLogo()
+{
     displayWriteNumber(0, LETTER_E);
     displayWriteNumber(1, LETTER_H);
     displayWriteNumber(2, 1);

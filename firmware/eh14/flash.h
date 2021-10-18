@@ -149,6 +149,7 @@ void flashLoadSettings()
     silentThreshhold = settings[SETTINGS_HEADER_SILENT_THRESHOLD] < SILENT_MODE_THRESHOLDS_COUNT ? settings[SETTINGS_HEADER_SILENT_THRESHOLD] : silentThreshhold;
     silentModeHighPower = settings[SETTINGS_HEADER_SILENT_HIGH_POWER] == 1;
     currentAlarmLoopSetting = settings[SETTINGS_HEADER_ALARM_LOOPS] < ALARMS_LOOPS_COUNT ? settings[SETTINGS_HEADER_ALARM_LOOPS] : currentAlarmLoopSetting;
+    currentIntroEnabled = settings[SETTINGS_HEADER_INTRO_ENABLED] == 1;
     Serial.println("Reading settings from flash: ");
     for (byte i = 0; i < SETTINGS_HEADER_LENGTH_REAL; i++)
     {
@@ -166,7 +167,9 @@ bool flashSettingsHasChanged()
         settings[SETTINGS_HEADER_ALARM] == currentAlarm &&
         settings[SETTINGS_HEADER_SILENT_THRESHOLD] == silentThreshhold &&
         settings[SETTINGS_HEADER_SILENT_HIGH_POWER] == (silentModeHighPower ? 1 : 0) &&
-        settings[SETTINGS_HEADER_ALARM_LOOPS] == currentAlarmLoopSetting);
+        settings[SETTINGS_HEADER_ALARM_LOOPS] == currentAlarmLoopSetting &&
+        settings[SETTINGS_HEADER_INTRO_ENABLED] == (currentIntroEnabled ? 1 : 0)
+    );
 }
 
 void flashSaveSettings()
@@ -183,6 +186,7 @@ void flashSaveSettings()
     settings[SETTINGS_HEADER_SILENT_THRESHOLD] = silentThreshhold;
     settings[SETTINGS_HEADER_SILENT_HIGH_POWER] = silentModeHighPower ? 1 : 0;
     settings[SETTINGS_HEADER_ALARM_LOOPS] = currentAlarmLoopSetting;
+    settings[SETTINGS_HEADER_INTRO_ENABLED] = currentIntroEnabled ? 1 : 0;
 
     Serial.print("Flash erase sector 0 ");
     if (flash.eraseSector(0))

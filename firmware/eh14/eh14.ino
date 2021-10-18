@@ -27,9 +27,6 @@ void setup()
     pinMode(PIN_IR_CLOCK, INPUT_PULLUP);
     pinMode(PIN_LIGHT_SENSOR, INPUT);
 
-    // clears the display and shows "EH14"
-    displaySetup();
-
     Serial.begin(115200);
     Serial.println("EH14 startup\n");
 
@@ -65,22 +62,42 @@ void setup()
     // Load settings stored in flash (volumne, alarm number...)
     flashLoadSettings();
 
-    // Intro music - says first alarm sample
-    saySample(SAMPLE_ALARM_BASE);
-    delay(100);
+    // Clears the display
+    displaySetup();
 
-    // Clears display
-    displayClear();
+    if (currentIntroEnabled)
+    {
+        displayClear(true);
+        delay(100);
 
-    // Flashes status led
-    displayClockReady();
+        // shows "EH14"
+        displayLogo();
 
-    Serial.println("EH14 ready\n");
+        // Intro music - says first alarm sample
+        saySample(SAMPLE_ALARM_BASE);
+        delay(100);
 
-    // Displays and says current time
-    DateTime now = rtc.now();
-    displayTime(now.hour(), now.minute());
-    sayTime(now.hour(), now.minute(), 0);
+        // Clears display
+        displayClear();
+
+        // Flashes status led
+        displayClockReady();
+
+        Serial.println("EH14 ready\n");
+
+        // Displays and says current time
+        DateTime now = rtc.now();
+        displayTime(now.hour(), now.minute());
+        sayTime(now.hour(), now.minute(), 0);
+
+        currentIntroEnabled = false;
+        flashSaveSettings();
+    }
+    else
+    {
+        DateTime now = rtc.now();
+        displayTime(now.hour(), now.minute(), true);
+    }
 }
 
 // Main loop references partial loops
@@ -227,8 +244,12 @@ void timeLoop()
     if (CHANGE_BUTTON_PRESSED)
     {
         CHANGE_BUTTON_PRESSED = false;
+        currentIntroEnabled = true;
+        flashSaveSettings();
         displayClearBackwards();
         smartDelay(CHANGE_CLICK_DISPLAY_CLEAR_TIMING);
+        currentIntroEnabled = false;
+        flashSaveSettings();
     }
 
     // ignore if silent mode
