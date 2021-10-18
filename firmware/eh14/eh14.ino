@@ -274,7 +274,10 @@ void timeLoop()
     {
         SNOOZE_BUTTON_PRESSED = false;
         sayTime(now.hour(), now.minute(), 0);
-        smartDelay(200);
+        smartDelay(100);
+        now = rtc.now();
+        displayTime(now.hour(), now.minute());
+        smartDelay(100);
         if (readBattery() < BATTERY_LOW)
         {
             displayBatteryLow();
