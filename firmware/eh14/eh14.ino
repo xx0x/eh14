@@ -13,6 +13,7 @@
 #include "./say.h"
 #include "./sleep.h"
 #include "./battery.h"
+#include "./test.h"
 
 void setup()
 {
@@ -26,6 +27,15 @@ void setup()
     pinMode(PIN_IR_DATA, INPUT_PULLUP);
     pinMode(PIN_IR_CLOCK, INPUT_PULLUP);
     pinMode(PIN_LIGHT_SENSOR, INPUT);
+
+    while (digitalRead(PIN_MENU_BUTTON) == LOW && digitalRead(PIN_CHANGE_BUTTON) == LOW)
+    {
+        testModeEnabled = true;
+        displaySetLed(true);
+        delay(50);
+        displaySetLed(false);
+        delay(50);
+    }
 
     Serial.begin(115200);
     Serial.println("EH14 startup\n");
@@ -93,7 +103,7 @@ void setup()
         currentIntroEnabled = false;
         flashSaveSettings();
     }
-    else
+    else if (!testModeEnabled)
     {
         DateTime now = rtc.now();
         displayTime(now.hour(), now.minute(), true);
@@ -103,6 +113,7 @@ void setup()
 // Main loop references partial loops
 void loop()
 {
+    testLoop();
     serialLoop();
     alarmLoop();
 
@@ -695,6 +706,15 @@ void randomSoundLoop()
         buttonPressed[SOUND_BUTTON] = false;
         byte soundNumber = random(SAMPLE_ALARM_BASE, SAMPLE_ALARM_BASE + alarmsCount - 1);
         saySample(soundNumber);
+    }
+}
+
+void testLoop()
+{
+    if (testModeEnabled)
+    {
+        testModeEnabled = false;
+        testSequence();
     }
 }
 

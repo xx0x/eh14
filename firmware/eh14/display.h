@@ -241,12 +241,23 @@ void displayTime(byte hours, byte minutes)
 }
 
 // Display write 4 numbers
+void displayWriteNumbers(byte a, byte b, byte c, byte d, bool force)
+{
+    displayWriteNumber(0, a, force);
+    displayWriteNumber(1, b, force);
+    displayWriteNumber(2, c, force);
+    displayWriteNumber(3, d, force);
+}
+
 void displayWriteNumbers(byte a, byte b, byte c, byte d)
 {
-    displayWriteNumber(0, a);
-    displayWriteNumber(1, b);
-    displayWriteNumber(2, c);
-    displayWriteNumber(3, d);
+    displayWriteNumbers(a, b, c, d, false);
+}
+
+// Display write 4 numbers
+void displayWriteBigNumber(unsigned int num)
+{
+    displayWriteNumbers((num / 1000) % 10, (num / 100) % 10, (num / 10) % 10, num % 10);
 }
 
 // Display preparation, clears it, takes approx 1s

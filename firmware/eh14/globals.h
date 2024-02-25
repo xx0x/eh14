@@ -152,6 +152,9 @@ byte prevBatteryMeasure = BATTERY_NO_MEASURE;
 // Startup stuff
 bool currentIntroEnabled = false;
 
+// Test Stuff
+bool testModeEnabled = false;
+
 // Functions
 void smartDelay(unsigned int d)
 {

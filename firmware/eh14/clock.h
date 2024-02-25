@@ -8,10 +8,15 @@ void clockSet(byte hr, byte min)
     clockSet(hr, min, 0);
 }
 
-void clockAlarmSet(byte hr, byte min)
+void clockAlarmSet(byte hr, byte min, byte ss)
 {
     rtc.clearAlarm(1);
-    rtc.setAlarm1(DateTime(2020, 3, 14, hr, min, 0), DS3231_A1_Hour);
+    rtc.setAlarm1(DateTime(2020, 3, 14, hr, min, ss), DS3231_A1_Hour);
+}
+
+void clockAlarmSet(byte hr, byte min)
+{
+    clockAlarmSet(hr, min, 0);
 }
 
 void clockClearAlarm()
