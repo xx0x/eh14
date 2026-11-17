@@ -1,0 +1,12 @@
+[submodule "firmware/eh14/lib/CMSIS_6"]
+	path = firmware/eh14/lib/CMSIS_6
+	url = https://github.com/ARM-software/CMSIS_6.git
+[submodule "firmware/eh14/lib/microchip_driver"]
+	path = firmware/eh14/lib/microchip_driver
+	url = https://github.com/hathach/microchip_driver.git
+[submodule "firmware/eh14/lib/tinyusb"]
+	path = firmware/eh14/lib/tinyusb
+	url = https://github.com/hathach/tinyusb.git
+[submodule "firmware/eh14/lib/uf2"]
+	path = firmware/eh14/lib/uf2
+	url = https://github.com/microsoft/uf2.git

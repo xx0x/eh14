@@ -1,0 +1,118 @@
+/*
+MIT License
+
+Copyright (c) 2026 Vaclav Mach
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/*
+ * Linker script for the EH14 firmware on the ATSAMD21G18A, behind the UF2 bootloader.
+ * The regions are filled in by CMake (see the memory layout in CMakeLists.txt).
+ */
+
+OUTPUT_FORMAT("elf32-littlearm")
+OUTPUT_ARCH(arm)
+ENTRY(Reset_Handler)
+
+MEMORY
+{
+    FLASH (rx)  : ORIGIN = @LD_FLASH_ORIGIN@, LENGTH = @LD_FLASH_LENGTH@
+    RAM   (rwx) : ORIGIN = @LD_RAM_ORIGIN@, LENGTH = @LD_RAM_LENGTH@
+}
+
+/* The stack grows down from the end of RAM (which stops one word short of the chip's end, see CMakeLists.txt).
+ * Its size is only checked for: nothing else is placed above .bss, so it can take whatever is left. */
+_estack = ORIGIN(RAM) + LENGTH(RAM);
+_min_stack_size = 0x1000;
+
+SECTIONS
+{
+    .text :
+    {
+        . = ALIGN(4);
+        KEEP(*(.vectors))
+        *(.text*)
+        *(.rodata*)
+        *(.glue_7) *(.glue_7t) *(.eh_frame)
+        KEEP(*(.init))
+        KEEP(*(.fini))
+        . = ALIGN(4);
+        __preinit_array_start = .;
+        KEEP(*(.preinit_array))
+        __preinit_array_end = .;
+        . = ALIGN(4);
+        __init_array_start = .;
+        KEEP(*(SORT(.init_array.*)))
+        KEEP(*(.init_array))
+        __init_array_end = .;
+        . = ALIGN(4);
+        __fini_array_start = .;
+        KEEP(*(SORT(.fini_array.*)))
+        KEEP(*(.fini_array))
+        __fini_array_end = .;
+        . = ALIGN(4);
+    } > FLASH
+
+    .ARM.extab : { *(.ARM.extab* .gnu.linkonce.armextab.*) } > FLASH
+    .ARM.exidx :
+    {
+        __exidx_start = .;
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > FLASH
+
+    . = ALIGN(4);
+    _sidata = LOADADDR(.data);
+
+    .data :
+    {
+        . = ALIGN(4);
+        _sdata = .;
+        *(.ramfunc*)
+        *(.data*)
+        . = ALIGN(4);
+        _edata = .;
+    } > RAM AT > FLASH
+
+    .bss (NOLOAD) :
+    {
+        . = ALIGN(4);
+        _sbss = .;
+        *(.bss*)
+        *(COMMON)
+        . = ALIGN(4);
+        _ebss = .;
+        end = .;
+        _end = .;
+    } > RAM
+
+    /* Bench-only variables that a reset leaves as they were (debug_ breadcrumbs, see CLAUDE.md). */
+    .noinit (NOLOAD) :
+    {
+        . = ALIGN(4);
+        *(.noinit*)
+        . = ALIGN(4);
+        _enoinit = .;
+    } > RAM
+
+    ASSERT(_estack - _enoinit >= _min_stack_size, "Not enough RAM left for the stack")
+
+    .ARM.attributes 0 : { *(.ARM.attributes) }
+}

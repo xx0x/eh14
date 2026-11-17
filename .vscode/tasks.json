@@ -1,0 +1,67 @@
+{
+    // Tasks for the EH14 main firmware (firmware/eh14). Each one runs a target of its CMake build, so they behave
+    // exactly as `make <target>` in firmware/eh14/build does - see firmware/eh14/CLAUDE.md.
+    "version": "2.0.0",
+    "options": {
+        "cwd": "${workspaceFolder}/firmware/eh14"
+    },
+    "tasks": [
+        {
+            "label": "EH14: Build",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build -j 8",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+        {
+            "label": "EH14: Flash (J-Link)",
+            "detail": "Builds and writes the firmware; the bootloader stays",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build -j 8 --target flash-jlink",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+        {
+            "label": "EH14: Flash bootloader + firmware (J-Link)",
+            "detail": "BOOTPROT must be cleared first, see bootloader/README.md",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build -j 8 --target flash-all-jlink",
+            "problemMatcher": []
+        },
+        {
+            "label": "EH14: Flash bootloader (J-Link)",
+            "detail": "BOOTPROT must be cleared first, see bootloader/README.md",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build --target flash-bootloader-jlink",
+            "problemMatcher": []
+        },
+        {
+            "label": "EH14: Flash over USB",
+            "detail": "No probe needed - open the clock's menu first, so it is awake",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build -j 8 --target flash-usb",
+            "problemMatcher": []
+        },
+        {
+            "label": "EH14: Set time",
+            "detail": "Sets the clock to this computer's time - open the clock's menu first",
+            "type": "shell",
+            "command": "python3 tools/set_time.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "EH14: Clean",
+            "type": "shell",
+            "command": "cmake --build build --target clean",
+            "problemMatcher": []
+        }
+    ]
+}
