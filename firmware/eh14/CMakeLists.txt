@@ -266,6 +266,15 @@ add_custom_command(TARGET ${PROJECT_NAME}.elf POST_BUILD
   COMMENT "Generating HEX, BIN and UF2 images"
 )
 
+# The images to share: firmware/builds/eh14_app_<YYYYMMDD>.hex and .uf2, dated the day the target runs.
+get_filename_component(PUBLISH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../builds" ABSOLUTE)
+add_custom_target(publish
+  COMMAND ${CMAKE_COMMAND} -DNAME=${PROJECT_NAME} -DHEX_FILE=${HEX_FILE} -DUF2_FILE=${UF2_FILE}
+    -DDEST_DIR=${PUBLISH_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/misc/publish.cmake
+  DEPENDS ${PROJECT_NAME}.elf
+  COMMENT "Publishing ${PROJECT_NAME}.hex and ${PROJECT_NAME}.uf2 to ${PUBLISH_DIR}"
+)
+
 # ---------------------------------------------------------------------------
 # Flashing
 #

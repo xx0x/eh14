@@ -12,6 +12,9 @@ cmake -S . -B build && cmake --build build -j8
 or run the VS Code task **EH14: Build** (`.vscode/tasks.json`). The build
 makes `build/eh14.hex`, `.bin` and `.uf2`. A new `.cpp` goes into `APP_SOURCES` in `CMakeLists.txt`.
 
+**EH14: Publish build** (the `publish` target) builds and copies `eh14.hex` and `eh14.uf2` into `firmware/builds` as
+`eh14_app_<YYYYMMDD>.hex` and `.uf2`, dated the day it runs.
+
 ### Libraries
 
 Git submodules in `lib/`:

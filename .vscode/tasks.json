@@ -20,6 +20,16 @@
             }
         },
         {
+            "label": "EH14: Publish build",
+            "detail": "Builds and copies eh14.hex and eh14.uf2 to firmware/builds as eh14_app_<date>",
+            "type": "shell",
+            "command": "cmake -S . -B build && cmake --build build -j 8 --target publish",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+        {
             "label": "EH14: Flash (J-Link)",
             "detail": "Builds and writes the firmware; the bootloader stays",
             "type": "shell",
