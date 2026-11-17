@@ -1,4 +1,6 @@
 /.build
-/.vscode
 Thumbs.db
 .DS_Store
+/firmware/eh14/build
+/firmware/legacy/builds/private
+__pycache__

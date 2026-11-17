@@ -1,0 +1,28 @@
+{
+    // Microsoft C/C++ (IntelliSense): the firmware's own compile commands - the flags, the defines and the include
+    // paths of every file as CMake builds it - with the ARM toolchain asked for its C++23 headers. Configure the
+    // build once (the "EH14: Build" task) for build/compile_commands.json to be there.
+    "version": 4,
+    "configurations": [
+        {
+            "name": "EH14",
+            "compileCommands": "${workspaceFolder}/firmware/eh14/build/compile_commands.json",
+            "compilerPath": "/opt/homebrew/bin/arm-none-eabi-g++",
+            "intelliSenseMode": "gcc-arm",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++23",
+            "includePath": [
+                "${workspaceFolder}/firmware/eh14/src",
+                "${workspaceFolder}/firmware/eh14/src/usb",
+                "${workspaceFolder}/firmware/eh14/lib/CMSIS_6/CMSIS/Core/Include",
+                "${workspaceFolder}/firmware/eh14/lib/microchip_driver/samd21/include",
+                "${workspaceFolder}/firmware/eh14/lib/tinyusb/src"
+            ],
+            "defines": [
+                "__SAMD21G18A__",
+                "DONT_USE_CMSIS_INIT",
+                "NDEBUG"
+            ]
+        }
+    ]
+}

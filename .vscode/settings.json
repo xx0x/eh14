@@ -1,0 +1,8 @@
+{
+    // clangd: the compile commands of the firmware's CMake build, and the ARM toolchain asked for its own headers -
+    // without these, clangd reports every SAMD21 and standard header as missing.
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/firmware/eh14/build",
+        "--query-driver=/opt/homebrew/bin/arm-none-eabi-*,/usr/local/bin/arm-none-eabi-*,/Applications/ArmGNUToolchain/**/bin/arm-none-eabi-*"
+    ]
+}

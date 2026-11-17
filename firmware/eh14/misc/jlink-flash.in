@@ -1,0 +1,7 @@
+connect
+@JLINK_SAFE_DISPLAY@r
+halt
+loadfile @HEX_FILE@
+r
+g
+exit

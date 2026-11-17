@@ -1,0 +1,8 @@
+connect
+@JLINK_SAFE_DISPLAY@r
+halt
+loadfile @BOOTLOADER_HEX@
+loadfile @HEX_FILE@
+r
+g
+exit
