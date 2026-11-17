@@ -1,2 +1,4 @@
 /.build
 /.vscode
+Thumbs.db
+.DS_Store
